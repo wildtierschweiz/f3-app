@@ -11,7 +11,6 @@ use WildtierSchweiz\F3App\Iface\ServiceInterface;
 final class MailService extends Prefab implements ServiceInterface
 {
     private const DEFAULT_OPTIONS = [
-        'enable' => 0,
         'host' => 'localhost',
         'port' => 25,
         'user' => '',
@@ -30,14 +29,13 @@ final class MailService extends Prefab implements ServiceInterface
     function __construct(array $options_)
     {
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
-        if ((int)self::$_options['enable'] === 1)
-            self::$_service = new SMTP(
-                self::$_options['host'],
-                self::$_options['port'],
-                self::$_options['scheme'],
-                self::$_options['user'],
-                self::$_options['pass']
-            );
+        self::$_service = new SMTP(
+            self::$_options['host'],
+            self::$_options['port'],
+            self::$_options['scheme'],
+            self::$_options['user'],
+            self::$_options['pass']
+        );
     }
 
     /**
@@ -69,9 +67,6 @@ final class MailService extends Prefab implements ServiceInterface
      */
     static function sendMail(array $to_, string $subject_, string $message_, array $from_ = [], array $attach_ = [], string $charset_ = ''): bool
     {
-        if ((int)self::$_options['enable'] !== 1)
-            return false;
-
         $_charset = $charset_ ?: self::$_options['charset'];
 
         $_toaddr = [];

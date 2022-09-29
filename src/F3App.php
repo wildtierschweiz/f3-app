@@ -43,7 +43,8 @@ class F3App extends Prefab
         self::$_f3 = Base::instance();
         self::register('config', self::DEFAULT_OPTIONS['config_service_class'], ['path' => $config_path_]);
         foreach (self::$_f3->get('CONF._services') as $name_ => $class_)
-            self::register($name_, $class_, self::$_f3->get('CONF.' . $name_));
+            if ((int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
+                self::register($name_, $class_, self::$_f3->get('CONF.' . $name_));
     }
 
     /**
@@ -159,7 +160,7 @@ class F3App extends Prefab
      */
     static function service(string $name_)
     {
-        return isset(self::$_service[$name_]) ? self::$_service[$name_]::instance() : NULL;
+        return isset(self::$_service[$name_]) ? self::$_service[$name_] : NULL;
     }
 
     /**
