@@ -45,8 +45,12 @@ final class SessionService extends Prefab implements ServiceInterface
     function __construct(array $options_)
     {
         self::$_f3 = Base::instance();
-        self::$_db = DatabaseService::instance()::getService();
-        self::$_cache = CacheService::instance()::getService();
+        // TODO::better solution for this mess
+        if ((int)self::$_f3->get('CONF.database.enable') === 1)
+            self::$_db = DatabaseService::instance()::getService();
+        // TODO::better solution for this mess
+        if ((int)self::$_f3->get('CONF.cache.enable') === 1)
+            self::$_cache = CacheService::instance()::getService();
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
         session_set_cookie_params(self::$_options['cookie']['options']);
         session_name(self::$_options['name']);
