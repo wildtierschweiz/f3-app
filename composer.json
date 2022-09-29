@@ -1,0 +1,21 @@
+{
+    "name": "wildtierschweiz/f3-app",
+    "description": "Secure boilerplate for a fat-free framework (f3) web app",
+    "type": "library",
+    "require": {
+        "php": ">=7.4",
+        "bcosca/fatfree-core": "3.8"
+    },
+    "license": "MIT",
+    "authors": [{
+        "name": "Daniel Duersteler",
+        "email": "daniel.duersteler@gmail.com",
+        "homepage": "https://www.wildtier.ch",
+        "role": "Developer"
+    }],
+    "autoload": {
+        "psr-4": {
+            "wildtierschweiz\\F3App\\": "src"
+        }
+    }
+}
