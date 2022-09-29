@@ -9,11 +9,28 @@ use Prefab;
 
 /**
  * application base class
+ * individual page controllers should extend this class
  */
 class F3App extends Prefab
 {
-    private const DEFAULT_CONFIG_PATH = '../config/';
+    /**
+     * local constants
+     */
+    private const DEFAULT_OPTIONS = [
+        'default_config_path' => '../config/',
+        'config_service_class' => __NAMESPACE__ . '\Service\ConfigService',
+    ];
+
+    /**
+     * f3 instance
+     * @var Base
+     */
     static private Base $_f3;
+
+    /**
+     * service registry
+     * @var array
+     */
     static private array $_service = [];
 
     /**
@@ -21,11 +38,11 @@ class F3App extends Prefab
      * load application configuration and init services
      * @param string $config_path_
      */
-    function __construct(string $config_path_ = self::DEFAULT_CONFIG_PATH)
+    function __construct(string $config_path_ = self::DEFAULT_OPTIONS['default_config_path'])
     {
         self::$_f3 = Base::instance();
-        self::register('config', 'Dduers\F3App\Service\ConfigService', ['path' => $config_path_]);
-        foreach (self::$_f3->get('CONF.services') as $name_ => $class_)
+        self::register('config', self::DEFAULT_OPTIONS['config_service_class'], ['path' => $config_path_]);
+        foreach (self::$_f3->get('CONF._services') as $name_ => $class_)
             self::register($name_, $class_, self::$_f3->get('CONF.' . $name_));
     }
 
