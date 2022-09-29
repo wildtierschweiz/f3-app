@@ -18,6 +18,7 @@ class F3App extends Prefab
      */
     private const DEFAULT_OPTIONS = [
         'config_path' => '../config/',
+        'config_allow' => false,
         'config_service_class' => __NAMESPACE__ . '\Service\ConfigService',
     ];
 
@@ -39,7 +40,6 @@ class F3App extends Prefab
      */
     private static array $_options;
     
-
     /**
      * class constructor:
      * load application configuration and init services
@@ -49,7 +49,10 @@ class F3App extends Prefab
     {
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
         self::$_f3 = Base::instance();
-        self::register('config', self::$_options['config_service_class'], ['path' => self::$_options['config_path']]);
+        self::register('config', self::$_options['config_service_class'], [
+            'path' => self::$_options['config_path'],
+            'allow' => self::$_options['config_allow']
+        ]);
         foreach (self::$_f3->get('CONF._services') as $name_ => $class_)
             if ((int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
                 self::register($name_, $class_, self::$_f3->get('CONF.' . $name_));
