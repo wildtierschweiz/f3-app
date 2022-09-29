@@ -14,7 +14,8 @@ use Base;
 final class ConfigService extends Prefab implements ServiceInterface
 {
     private const DEFAULT_OPTIONS = [
-        'path' => '../config/'
+        'path' => '../config/',
+        'allow' => false
     ];
     static private Base $_f3;
     static private array $_options = [];
@@ -29,11 +30,10 @@ final class ConfigService extends Prefab implements ServiceInterface
         self::$_f3 = Base::instance();
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
         self::$_f3->config(__DIR__ . '/../Config/default.ini');
-        $_config_path = (self::$_options['path'] ?? '') ?: self::DEFAULT_OPTIONS['path'];
-        $_config_files = glob($_config_path . '*.ini');
+        $_config_files = glob(self::$_options['path'] . '*.ini');
         if ($_config_files !== false)
             foreach ($_config_files as $_inifile)
-                self::$_f3->config($_inifile);
+                self::$_f3->config($_inifile, (bool)self::$_options['allow']);
     }
 
     /**
