@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Dduers\F3App\Service;
+namespace WildtierSchweiz\F3App\Service;
 
 use Prefab;
 use SMTP;
-use Dduers\F3App\Iface\ServiceInterface;
+use WildtierSchweiz\F3App\Iface\ServiceInterface;
 
 final class MailService extends Prefab implements ServiceInterface
 {
