@@ -13,9 +13,7 @@ use Cache;
  */
 final class CacheService extends Prefab implements ServiceInterface
 {
-    private const DEFAULT_OPTIONS = [
-        'enable' => 0
-    ];
+    private const DEFAULT_OPTIONS = [];
     static private $_service;
     static private array $_options = [];
 
@@ -27,10 +25,8 @@ final class CacheService extends Prefab implements ServiceInterface
     function __construct(array $options_)
     {
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
-        if ((int)self::$_options['enable'] === 1) {
-            self::$_service = Cache::instance();
-            self::$_service->load(TRUE);
-        }
+        self::$_service = Cache::instance();
+        self::$_service->load(TRUE);
     }
 
     /**
