@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Dduers\F3App\Utility;
+namespace WildtierSchweiz\F3App\Utility;
 
 use Prefab;
 

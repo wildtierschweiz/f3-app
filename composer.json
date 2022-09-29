@@ -15,7 +15,7 @@
     }],
     "autoload": {
         "psr-4": {
-            "wildtierschweiz\\F3App\\": "src"
+            "wildtierSchweiz\\F3App\\": "src"
         }
     }
 }

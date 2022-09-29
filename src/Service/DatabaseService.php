@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Dduers\F3App\Service;
+namespace WildtierSchweiz\F3App\Service;
 
 use Prefab;
-use Dduers\F3App\Iface\ServiceInterface;
+use WildtierSchweiz\F3App\Iface\ServiceInterface;
 use DB\Jig;
 use DB\Mongo;
 use DB\SQL;
