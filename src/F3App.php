@@ -171,7 +171,7 @@ class F3App extends Prefab
      */
     static function service(string $name_)
     {
-        return isset(self::$_service[$name_]) ? self::$_service[$name_] : NULL;
+        return isset(self::$_service[$name_]) ? self::$_service[$name_]::instance() : NULL;
     }
 
     /**
