@@ -1,6 +1,6 @@
 <?php
 
-namespace Dduers\F3App\Iface;
+namespace WildtierSchweiz\F3App\Iface;
 
 interface ServiceInterface
 {
