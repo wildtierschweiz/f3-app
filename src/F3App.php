@@ -64,7 +64,7 @@ class F3App extends Prefab
      * @param Base $f3_
      * @return void
      */
-    static function beforeroute(Base $f3_): void
+    public static function beforeroute(Base $f3_): void
     {
         $_session = self::service('session');
         if (!$f3_->get('PARAMS.lang') || !file_exists($f3_->get('LOCALES') . $f3_->get('PARAMS.lang') . '.ini')) {
@@ -88,7 +88,7 @@ class F3App extends Prefab
      * @param Base $f3_
      * @return void
      */
-    static function afterroute(Base $f3_): void
+    public static function afterroute(Base $f3_): void
     {
         if ($_response = self::service('response')) {
             $_response::dumpHeaders();
@@ -106,7 +106,7 @@ class F3App extends Prefab
      * @param int $code_
      * @return void
      */
-    static function error(int $code_): void
+    public static function error(int $code_): void
     {
         self::$_f3->error($code_);
         return;
@@ -118,7 +118,7 @@ class F3App extends Prefab
      * @param mixed $value_ (optional) if set, the var is updated with the value
      * @return mixed current value or new value of f3 hive variable
      */
-    static function vars(string $name_, $value_ = NULL)
+    public static function vars(string $name_, $value_ = NULL)
     {
         if (isset($value_))
             return (self::$_f3->set($name_, $value_));
@@ -131,7 +131,7 @@ class F3App extends Prefab
      * @param string $content_
      * @return void
      */
-    static function header(string $header_, string $content_): void
+    public static function header(string $header_, string $content_): void
     {
         if ($_response = self::service('response'))
             $_response::setHeader($header_, $content_);
@@ -143,7 +143,7 @@ class F3App extends Prefab
      * @param mixed $data_
      * @return void
      */
-    static function body($data_): void
+    public static function body($data_): void
     {
         if ($_response = self::service('response'))
             $_response::setBody($data_);
@@ -157,7 +157,7 @@ class F3App extends Prefab
      * @param array $options_
      * @return mixed initialized service instance
      */
-    static function register(string $name_, string $class_, array $options_ = [])
+    public static function register(string $name_, string $class_, array $options_ = [])
     {
         if (class_exists($class_))
             return self::$_service[$name_] = $class_::instance($options_);
@@ -169,7 +169,7 @@ class F3App extends Prefab
      * @param string $name_
      * @return mixed service instance
      */
-    static function service(string $name_)
+    public static function service(string $name_)
     {
         return isset(self::$_service[$name_]) ? self::$_service[$name_]::instance() : NULL;
     }
@@ -178,7 +178,7 @@ class F3App extends Prefab
      * run application
      * @return void
      */
-    static function run(): void
+    public static function run(): void
     {
         self::$_f3->run();
         return;
