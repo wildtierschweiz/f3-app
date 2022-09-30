@@ -39,7 +39,7 @@ class F3App extends Prefab
      * @var array
      */
     private static array $_options;
-    
+
     /**
      * class constructor:
      * load application configuration and init services
@@ -120,7 +120,7 @@ class F3App extends Prefab
      */
     public static function vars(string $name_, $value_ = NULL)
     {
-        if (isset($value_))
+        if ($value_ !== NULL)
             return (self::$_f3->set($name_, $value_));
         else return (self::$_f3->get($name_));
     }
@@ -171,7 +171,7 @@ class F3App extends Prefab
      */
     public static function service(string $name_)
     {
-        return isset(self::$_service[$name_]) ? self::$_service[$name_]::instance() : NULL;
+        return (self::$_service[$name_] ?? NULL) ? self::$_service[$name_]::instance() : NULL;
     }
 
     /**
