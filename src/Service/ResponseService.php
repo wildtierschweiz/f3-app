@@ -74,6 +74,8 @@ final class ResponseService extends Prefab implements ServiceInterface
      */
     public static function dumpHeaders(): void
     {
+        if (self::getHeader('Content-Type') === '')
+            self::setHeader('Content-Type', 'application/json');
         foreach (self::$_options['header'] as $header_ => $items_) {
             switch ($header_) {
                 case 'Access-Control-Allow-Origin':
@@ -97,9 +99,8 @@ final class ResponseService extends Prefab implements ServiceInterface
      */
     public static function dumpBody(): void
     {
-        if (!self::getHeader('Content-Type'))
-            self::setHeader('Content-Type', 'application/json');
         switch (self::getHeader('Content-Type')) {
+            default:
             case 'application/json':
                 if (is_array(self::$_options['body']))
                     echo json_encode(self::$_options['body']);
