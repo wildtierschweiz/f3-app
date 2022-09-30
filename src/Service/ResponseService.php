@@ -100,7 +100,6 @@ final class ResponseService extends Prefab implements ServiceInterface
         if (self::getHeader('Content-Type') === '')
             self::setHeader('Content-Type', 'application/json');
         switch (self::getHeader('Content-Type')) {
-            default:
             case 'application/json':
                 if (is_array(self::$_options['body']))
                     echo json_encode(self::$_options['body']);
