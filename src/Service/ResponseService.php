@@ -97,6 +97,8 @@ final class ResponseService extends Prefab implements ServiceInterface
      */
     public static function dumpBody(): void
     {
+        if (self::getHeader('Content-Type') === '')
+            self::setHeader('Content-Type', 'application/json');
         switch (self::getHeader('Content-Type')) {
             default:
             case 'application/json':
