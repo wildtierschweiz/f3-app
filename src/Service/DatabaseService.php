@@ -22,8 +22,8 @@ final class DatabaseService extends Prefab implements ServiceInterface
         'pass' => '',
         'folder' => '',
     ];
-    static private $_service;
-    static private array $_options = [];
+    private static $_service;
+    private static array $_options = [];
 
     function __construct(array $options_)
     {
@@ -65,7 +65,7 @@ final class DatabaseService extends Prefab implements ServiceInterface
      * get service instance
      * @return SQL|Mongo|Jig|null
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -74,7 +74,7 @@ final class DatabaseService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }

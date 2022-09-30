@@ -17,8 +17,8 @@ final class ConfigService extends Prefab implements ServiceInterface
         'path' => '../config/',
         'allow' => false
     ];
-    static private Base $_f3;
-    static private array $_options = [];
+    private static Base $_f3;
+    private static array $_options = [];
 
     /**
      * constructor
@@ -40,7 +40,7 @@ final class ConfigService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }

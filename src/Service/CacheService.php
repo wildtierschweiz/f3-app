@@ -14,8 +14,8 @@ use Cache;
 final class CacheService extends Prefab implements ServiceInterface
 {
     private const DEFAULT_OPTIONS = [];
-    static private $_service;
-    static private array $_options = [];
+    private static array $_options = [];
+    private static $_service;
 
     /**
      * constructor
@@ -33,7 +33,7 @@ final class CacheService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }
@@ -42,7 +42,7 @@ final class CacheService extends Prefab implements ServiceInterface
      * get service instance
      * @return Cache|null
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }

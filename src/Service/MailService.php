@@ -23,8 +23,8 @@ final class MailService extends Prefab implements ServiceInterface
         'mime' => 'text/html',
         'charset' => 'UTF-8'
     ];
-    static private $_service;
-    static private array $_options = [];
+    private static $_service;
+    private static array $_options = [];
 
     function __construct(array $options_)
     {
@@ -42,7 +42,7 @@ final class MailService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }
@@ -51,7 +51,7 @@ final class MailService extends Prefab implements ServiceInterface
      * get service instance
      * @return SMTP|null
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -65,7 +65,7 @@ final class MailService extends Prefab implements ServiceInterface
      * @param array $attach_ (optional) array of filenames
      * @return bool true on success, false on error
      */
-    static function sendMail(array $to_, string $subject_, string $message_, array $from_ = [], array $attach_ = [], string $charset_ = ''): bool
+    public static function sendMail(array $to_, string $subject_, string $message_, array $from_ = [], array $attach_ = [], string $charset_ = ''): bool
     {
         $_charset = $charset_ ?: self::$_options['charset'];
 

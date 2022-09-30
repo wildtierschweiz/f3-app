@@ -43,7 +43,7 @@ final class LocationService extends Prefab implements ServiceInterface
      * try geo location service, then, if user is loggen in, country from delivery address
      * @return string location country code like 'CH' or 'DE'
      */
-    static function getCountryCode(): string
+    public static function getCountryCode(): string
     {
         // return default location for all kind of bots
         if (self::$_f3_audit->isbot())
@@ -82,7 +82,7 @@ final class LocationService extends Prefab implements ServiceInterface
     /**
      * returns instance of location service
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -91,7 +91,7 @@ final class LocationService extends Prefab implements ServiceInterface
      * returns current configuation
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }

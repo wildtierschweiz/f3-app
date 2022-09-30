@@ -14,8 +14,8 @@ final class ResponseService extends Prefab implements ServiceInterface
         'header' => [],
         'body' => ''
     ];
-    static private $_service;
-    static private array $_options = [];
+    private static $_service;
+    private static array $_options = [];
 
     function __construct(array $options_)
     {
@@ -30,7 +30,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * @param string $content_
      * @return void
      */
-    static function setHeader(string $header_, string $content_): void
+    public static function setHeader(string $header_, string $content_): void
     {
         self::$_options['header'][$header_][] = $content_;
         return;
@@ -41,7 +41,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * @param mixed $body_
      * @return void
      */
-    static function setBody($body_): void
+    public static function setBody($body_): void
     {
         self::$_options['body'] = $body_;
     }
@@ -51,7 +51,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * @param array $headers_
      * @return void
      */
-    static function setHeaders(array $headers_): void
+    public static function setHeaders(array $headers_): void
     {
         foreach ($headers_ as $header_ => $items_)
             foreach ($items_ as $key_ => $content_)
@@ -63,7 +63,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * @param string $header_
      * @return string
      */
-    static function getHeader(string $header_): string
+    public static function getHeader(string $header_): string
     {
         return implode(',', self::$_options['header'][$header_]);
     }
@@ -72,7 +72,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * output response headers
      * @return void
      */
-    static function dumpHeaders(): void
+    public static function dumpHeaders(): void
     {
         foreach (self::$_options['header'] as $header_ => $items_) {
             switch ($header_) {
@@ -95,7 +95,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * output response body
      * @return void
      */
-    static function dumpBody(): void
+    public static function dumpBody(): void
     {
         switch (self::getHeader('Content-Type')) {
             default:
@@ -115,7 +115,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * get service instance
      * @return 
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -124,7 +124,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }

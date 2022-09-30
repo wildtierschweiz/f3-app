@@ -18,7 +18,7 @@ final class CookieService extends Prefab
             'samesite' => ''
         ]
     ];
-    static private array $_options = [];
+    private static array $_options = [];
 
     function __construct(array $options_)
     {
@@ -32,7 +32,7 @@ final class CookieService extends Prefab
      * @param array $options_ override default options
      * @return array options used to issue the cookie
      */
-    static function setCookie(string $name_, string $value_, array $options_ = []): array
+    public static function setCookie(string $name_, string $value_, array $options_ = []): array
     {
         $_options = array_merge(self::$_options['options'], $options_);
         setcookie($name_, $value_, array_filter([
@@ -51,7 +51,7 @@ final class CookieService extends Prefab
      * @param array $options_
      * @return array final cookie options
      */
-    static function setOptions(array $options_): array
+    public static function setOptions(array $options_): array
     {
         return self::$_options = array_merge(self::$_options, $options_);
     }
@@ -60,7 +60,7 @@ final class CookieService extends Prefab
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }

@@ -13,8 +13,8 @@ final class LogService extends Prefab implements ServiceInterface
     private const DEFAULT_OPTIONS = [
         'file' => 'log.txt'
     ];
-    static private $_service;
-    static private array $_options = [];
+    private static $_service;
+    private static array $_options = [];
 
     function __construct(array $options_)
     {
@@ -26,7 +26,7 @@ final class LogService extends Prefab implements ServiceInterface
      * get service instance
      * @return Log|null
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -35,7 +35,7 @@ final class LogService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static public function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }
@@ -46,7 +46,7 @@ final class LogService extends Prefab implements ServiceInterface
      * @param string $format_ (optional) e.g. 'r' for rfc 2822 log format
      * @return void
      */
-    static function write($content_, string $format_ = 'r'): void
+    public static function write($content_, string $format_ = 'r'): void
     {
         if (is_string($content_))
             self::$_service->write($content_, $format_);
@@ -57,7 +57,7 @@ final class LogService extends Prefab implements ServiceInterface
      * erase logfile
      * @return void
      */
-    static function erase(): void
+    public static function erase(): void
     {
         self::$_service->erase();
     }

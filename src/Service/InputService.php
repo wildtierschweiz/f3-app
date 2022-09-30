@@ -17,9 +17,9 @@ final class InputService extends Prefab implements ServiceInterface
             'exclude' => []
         ]
     ];
-    static private Base $_f3;
-    static private array $_options = [];
-    static private array $_request_headers = [];
+    private static Base $_f3;
+    private static array $_options = [];
+    private static array $_request_headers = [];
 
     function __construct(array $options_)
     {
@@ -36,7 +36,7 @@ final class InputService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }
@@ -45,7 +45,7 @@ final class InputService extends Prefab implements ServiceInterface
      * get request headers
      * @return array
      */
-    static function getRequestHeaders(): array
+    public static function getRequestHeaders(): array
     {
         return self::$_request_headers;
     }
@@ -54,7 +54,7 @@ final class InputService extends Prefab implements ServiceInterface
      * get bearer token from authorization header
      * @return string
      */
-    static function getBearerToken(): string
+    public static function getBearerToken(): string
     {
         $_auth_header_prefix = 'Bearer ';
         $_auth_header = self::$_request_headers['Authorization'] ?? '';
@@ -70,7 +70,7 @@ final class InputService extends Prefab implements ServiceInterface
      * @param string $method_
      * @return array
      */
-    static function sanitize(array $subject_, array $exclude_ = [], string $method_ = ''): array
+    public static function sanitize(array $subject_, array $exclude_ = [], string $method_ = ''): array
     {
         $_result = $subject_;
         foreach ($subject_ as $key_ => $value_) {
@@ -78,14 +78,14 @@ final class InputService extends Prefab implements ServiceInterface
                 continue;
             $_result[$key_] = $method_ === 'clean' ? self::$_f3->clean($value_) : self::$_f3->encode($value_);
         }
-        return /*array_filter(*/$_result/*)*/;
+        return /*array_filter(*/ $_result/*)*/;
     }
 
     /**
      * sanitize input data
      * @return void
      */
-    static function sanitizeInput(): void
+    public static function sanitizeInput(): void
     {
         if (self::$_f3->get('GET'))
             self::$_f3->set('GET', self::sanitize(
@@ -112,11 +112,11 @@ final class InputService extends Prefab implements ServiceInterface
      * parse input data from various content types and formats to assoc arrays
      * @return void
      */
-    static function parseInput(): void
+    public static function parseInput(): void
     {
         switch (self::$_f3->get('VERB')) {
             case 'POST':
-                switch (explode(';',self::$_request_headers['Content-Type'])[0] ?? '') {
+                switch (explode(';', self::$_request_headers['Content-Type'])[0] ?? '') {
                     default:
                     case 'application/json':
                         self::$_f3->set('POST', json_decode(file_get_contents("php://input"), true));
@@ -132,17 +132,12 @@ final class InputService extends Prefab implements ServiceInterface
                 }
                 break;
             case 'PUT':
-                switch (explode(';',self::$_request_headers['Content-Type'])[0] ?? '') {
+                switch (explode(';', self::$_request_headers['Content-Type'])[0] ?? '') {
                     default:
                     case 'application/json':
                         self::$_f3->set('PUT', json_decode(file_get_contents("php://input"), true));
                         break;
                 }
-                /*
-                $_body = file_get_contents("php://input");
-                parse_str($_body, $_parsed);
-                self::vars('PUT', $_parsed);
-                */
         }
     }
 }

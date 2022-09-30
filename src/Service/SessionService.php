@@ -34,13 +34,12 @@ final class SessionService extends Prefab implements ServiceInterface
             ]
         ]
     ];
-    static private $_service;
-    static private $_f3;
-    static private $_db;
-    static private $_cache;
-    static private array $_options = [];
-
-    static private string $_token = '';
+    private static $_service;
+    private static $_f3;
+    private static $_db;
+    private static $_cache;
+    private static array $_options = [];
+    private static string $_token = '';
 
     function __construct(array $options_)
     {
@@ -87,7 +86,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * create random string token
      * @return string
      */
-    static private function generateToken(): string
+    private static function generateToken(): string
     {
         return bin2hex(random_bytes(7));
     }
@@ -96,7 +95,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * get current session token
      * @return string
      */
-    static function getToken(): string
+    public static function getToken(): string
     {
         return self::$_token;
     }
@@ -105,7 +104,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * copy token to session
      * @return void
      */
-    static function storeToken(): void
+    public static function storeToken(): void
     {
         if ((int)self::$_options['csrf']['enable'] !== 1)
             return;
@@ -116,7 +115,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * check csrf client token against server token
      * @return bool
      */
-    static function checkToken(): bool
+    public static function checkToken(): bool
     {
         if ((int)self::$_options['csrf']['enable'] !== 1 || !in_array(self::$_f3->get('VERB'), self::$_options['csrf']['methods']))
             return true;
@@ -131,7 +130,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * destroy session
      * @return void
      */
-    static function destroy(): void
+    public static function destroy(): void
     {
         if (ini_get('session.use_cookies'))
             self::deleteSessionCookie();
@@ -143,7 +142,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * deletes the session cookie
      * @return void
      */
-    static private function deleteSessionCookie(): void
+    private static function deleteSessionCookie(): void
     {
         $_params = session_get_cookie_params();
         setcookie(session_name(), '', array_filter([
@@ -161,7 +160,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * clear session flash messages
      * @return void
      */
-    static function clearFlashMessages(): void
+    public static function clearFlashMessages(): void
     {
         self::$_f3->clear('SESSION._message');
     }
@@ -170,7 +169,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * get service instance
      * @return Session|SQLSession|MongoSession|JigSession|null
      */
-    static function getService()
+    public static function getService()
     {
         return self::$_service;
     }
@@ -179,7 +178,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * get service options
      * @return array
      */
-    static function getOptions(): array
+    public static function getOptions(): array
     {
         return self::$_options;
     }
