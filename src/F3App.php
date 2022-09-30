@@ -178,6 +178,17 @@ class F3App extends Prefab
     }
 
     /**
+     * add a route
+     * @param string $pattern_
+     * @param callable $handler_
+     */
+    public static function addRoute(string $pattern_, callable $handler_): void
+    {
+        self::$_f3->route($pattern_, $handler_);
+        return;
+    }
+
+    /**
      * run application
      * @return void
      */
