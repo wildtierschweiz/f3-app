@@ -65,7 +65,7 @@ final class ResponseService extends Prefab implements ServiceInterface
      */
     public static function getHeader(string $header_): string
     {
-        return implode(',', self::$_options['header'][$header_]);
+        return implode(',', self::$_options['header'][$header_] ?? []);
     }
 
     /**
