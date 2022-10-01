@@ -47,6 +47,15 @@ final class ResponseService extends Prefab implements ServiceInterface
     }
 
     /**
+     * get body
+     * @return mixed
+     */
+    public static function getBody()
+    {
+        return self::$_options['body'];
+    }
+
+    /**
      * set headers in batch
      * @param array $headers_
      * @return void
