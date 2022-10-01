@@ -117,7 +117,7 @@ final class SessionService extends Prefab implements ServiceInterface
      */
     public static function checkToken(): bool
     {
-        if ((int)self::$_options['csrf']['enable'] !== 1 || !in_array(self::$_f3->get('VERB'), self::$_options['csrf']['methods']))
+        if ((int)self::$_options['csrf']['enable'] !== 1 || !in_array(self::$_f3->get('VERB'), (array)self::$_options['csrf']['methods']))
             return true;
         $_token_server = self::$_f3->get('SESSION.' . self::$_options['key']);
         $_token_client = (string)(self::$_f3->get(self::$_f3->get('VERB') . '.' . self::$_options['key']) ?? '');
