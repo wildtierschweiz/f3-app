@@ -37,6 +37,19 @@ final class ResponseService extends Prefab implements ServiceInterface
     }
 
     /**
+     * remove all headers of a specific type
+     * @param string $header_
+     * @return bool
+     */
+    public static function removeHeader(string $header_): bool
+    {
+        if (!isset(self::$_options['header'][$header_]))
+            return false;
+        else unset(self::$_options['header'][$header_]);
+        return true;
+    }
+
+    /**
      * set response body
      * @param mixed $body_
      * @return void
