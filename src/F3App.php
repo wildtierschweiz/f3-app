@@ -134,10 +134,13 @@ class F3App extends Prefab
      * @param string $content_
      * @return void
      */
-    public static function header(string $header_, string $content_): void
+    public static function header(string $header_, string $content_, bool $replace_ = false): void
     {
-        if ($_response = self::service('response'))
+        if ($_response = self::service('response')) {
+            if ($replace_ === true)
+                $_response::removeHeader($header_);
             $_response::setHeader($header_, $content_);
+        }
         return;
     }
 
