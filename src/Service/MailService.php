@@ -72,28 +72,28 @@ final class MailService extends Prefab implements ServiceInterface
      * @param string $subject_
      * @param string $message_
      * @param array $from_ (optional) array of sender (one item) ['email' => 'name']
+     * @param array $reply_to_ (optional) array of reply to ['email' => 'name']
      * @param array $attach_ (optional) array of filenames
      * @return bool true on success, false on error
      */
-    public static function sendMail(array $to_, string $subject_, string $message_, array $from_ = [], array $attach_ = [], string $charset_ = ''): bool
+    public static function sendMail(array $to_, string $subject_, string $message_, array $from_ = [], array $reply_to_ = [], array $attach_ = [], string $charset_ = ''): bool
     {
         $_charset = $charset_ ?: self::$_options['charset'];
-
         $_to = self::parseIndividuals($to_);
-        // set default sender, if not given
-        if (!count($from_))
-            $from_ = [
-                self::$_options['defaultsender']['email'] ?? '' => 
-                    self::$_options['defaultsender']['name'] ?? NULL
-            ];
-        $_from = self::parseIndividuals($from_);
-
+        $_from = self::parseIndividuals(
+            count($from_) ? $from_ : [
+                self::$_options['defaultsender']['email'] ?? '' =>
+                self::$_options['defaultsender']['name'] ?? NULL
+            ]
+        );
+        $_reply_to = self::parseIndividuals($reply_to_);
         foreach ($attach_ as $_attachment)
             self::$_service->attach($_attachment);
-
         self::setHeader('Content-type', self::$_options['mime'] . '; charset=' . $_charset);
         self::setHeader('To', $_to);
         self::setHeader('From', $_from);
+        if ($_reply_to !== '')
+            self::setHeader('Reply-To', $_reply_to);
         self::setHeader('Subject', $subject_);
         return self::$_service->send($message_);
     }
@@ -110,6 +110,24 @@ final class MailService extends Prefab implements ServiceInterface
     }
 
     /**
+     * validate and transform an individuals array
+     * @param array $individuals_
+     * @return string email header conform cleanedup and parsed individuals
+     */
+    private function parseIndividuals(array $individuals_): string
+    {
+        $_result = [];
+        foreach ($individuals_ as $email_ => $name_) {
+            $_email = is_numeric($email_) ? $name_ : $email_;
+            $_name = is_numeric($email_) ? '' : $name_;
+            if (!($_i = self::createIndividual($_email, $_name)))
+                continue;
+            $_result[] = $_i;
+        }
+        return implode(', ', $_result);
+    }
+
+    /**
      * create an email individual for content headers
      * email is validated prior to creation
      * @param string $email_ email address of person
@@ -122,25 +140,6 @@ final class MailService extends Prefab implements ServiceInterface
         $_name = (($name_ ?? '') ? '"' . $name_ . '" ' : '');
         $_email = '<' . $email_ . '>';
         return ($_name ?: '') . $_email;
-    }
-
-    /**
-     * validate and transform an individuals array
-     * @param array $individuals_
-     * @return string email header conform cleanedup and parsed individuals
-     */
-    private function parseIndividuals(array $individuals_): string
-    {
-        $_result = [];
-        foreach ($individuals_ as $email_ => $name_) {
-            // if numeric key encounters, set name for email address
-            $_email = is_numeric($email_) ? $name_ : $email_;
-            $_name = is_numeric($email_) ? '' : $name_;
-            if (!($_i = self::createIndividual($_email, $_name)))
-                continue;
-            $_result[] = $_i;
-        }
-        return implode(', ', $_result);
     }
 
     /**
