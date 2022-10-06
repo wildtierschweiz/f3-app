@@ -114,7 +114,7 @@ final class MailService extends Prefab implements ServiceInterface
      * @param array $individuals_
      * @return string email header conform cleanedup and parsed individuals
      */
-    private function parseIndividuals(array $individuals_): string
+    private static function parseIndividuals(array $individuals_): string
     {
         $_result = [];
         foreach ($individuals_ as $email_ => $name_) {
