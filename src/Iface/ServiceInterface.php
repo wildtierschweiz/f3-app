@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WildtierSchweiz\F3App\Iface;
 
 interface ServiceInterface

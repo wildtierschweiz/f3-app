@@ -7,7 +7,11 @@ namespace WildtierSchweiz\F3App\Service;
 use Prefab;
 use SMTP;
 use WildtierSchweiz\F3App\Iface\ServiceInterface;
+use WildtierSchweiz\F3App\Utility\PolyfillUtility;
 
+/**
+ * mail service
+ */
 final class MailService extends Prefab implements ServiceInterface
 {
     private const DEFAULT_OPTIONS = [
@@ -23,9 +27,14 @@ final class MailService extends Prefab implements ServiceInterface
         'mime' => 'text/html',
         'charset' => 'UTF-8'
     ];
-    private static $_service;
+    private static SMTP $_service;
+    private static PolyfillUtility $_utility;
     private static array $_options = [];
 
+    /**
+     * constructor
+     * @param array $options_
+     */
     function __construct(array $options_)
     {
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
@@ -36,6 +45,7 @@ final class MailService extends Prefab implements ServiceInterface
             self::$_options['user'],
             self::$_options['pass']
         );
+        self::$_utility = PolyfillUtility::instance();
     }
 
     /**
@@ -69,26 +79,77 @@ final class MailService extends Prefab implements ServiceInterface
     {
         $_charset = $charset_ ?: self::$_options['charset'];
 
-        $_toaddr = [];
-        foreach ($to_ as $email_ => $name_)
-            $_toaddr[] = ($name_ ? '"' . $name_ . '"' : '') . ' <' . $email_ . '>';
-        $_toaddr = implode(', ', $_toaddr);
-
-        $_fromaddr = [];
-        foreach ($from_ as $email_ => $name_)
-            $_fromaddr[] = ($name_ ? '"' . $name_ . '"' : '') . ' <' . $email_ . '>';
-
-        if (!count($_fromaddr))
-            $_fromaddr[] = ((self::$_options['defaultsender']['name'] ?? '') ? '"' . self::$_options['defaultsender']['name'] . '"' : '') . ' <' . self::$_options['defaultsender']['email'] . '>';
-        $_fromaddr = implode(', ', $_fromaddr);
+        $_to = self::parseIndividuals($to_);
+        // set default sender, if not given
+        if (!count($from_))
+            $from_ = [
+                self::$_options['defaultsender']['email'] ?? '' => 
+                    self::$_options['defaultsender']['name'] ?? NULL
+            ];
+        $_from = self::parseIndividuals($from_);
 
         foreach ($attach_ as $_attachment)
             self::$_service->attach($_attachment);
 
-        self::$_service->set('Content-type', self::$_options['mime'] . '; charset=' . $_charset);
-        self::$_service->set('To', $_toaddr);
-        self::$_service->set('From', $_fromaddr);
-        self::$_service->set('Subject', $subject_);
+        self::setHeader('Content-type', self::$_options['mime'] . '; charset=' . $_charset);
+        self::setHeader('To', $_to);
+        self::setHeader('From', $_from);
+        self::setHeader('Subject', $subject_);
         return self::$_service->send($message_);
+    }
+
+    /**
+     * set a smtp header
+     * @param string $header_
+     * @param string $content_
+     * @return void
+     */
+    public static function setHeader(string $header_, string $content_): void
+    {
+        self::$_service->set($header_, $content_);
+    }
+
+    /**
+     * create an email individual for content headers
+     * email is validated prior to creation
+     * @param string $email_ email address of person
+     * @param string $name_ full name of person
+     */
+    private static function createIndividual(string $email_, ?string $name_ = NULL): string
+    {
+        if (!self::validateEmailAddress($email_))
+            return '';
+        $_name = (($name_ ?? '') ? '"' . $name_ . '" ' : '');
+        $_email = '<' . $email_ . '>';
+        return ($_name ?: '') . $_email;
+    }
+
+    /**
+     * validate and transform an individuals array
+     * @param array $individuals_
+     * @return string email header conform cleanedup and parsed individuals
+     */
+    private function parseIndividuals(array $individuals_): string
+    {
+        $_result = [];
+        foreach ($individuals_ as $email_ => $name_) {
+            // if numeric key encounters, set name for email address
+            $_email = is_numeric($email_) ? $name_ : $email_;
+            $_name = is_numeric($email_) ? '' : $name_;
+            if (!($_i = self::createIndividual($_email, $_name)))
+                continue;
+            $_result[] = $_i;
+        }
+        return implode(', ', $_result);
+    }
+
+    /**
+     * validate an email address
+     * @param string $email_
+     * @return bool
+     */
+    private static function validateEmailAddress(string $email_): bool
+    {
+        return filter_var($email_, FILTER_VALIDATE_EMAIL) ? true : false;
     }
 }
