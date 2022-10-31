@@ -107,9 +107,10 @@ class F3App extends Prefab
     /**
      * issue http error
      * @param int $code_
+     * @param string $text_ (optional)
      * @return void
      */
-    public static function error(int $code_, string $text_): void
+    public static function error(int $code_, string $text_ = ''): void
     {
         self::$_f3->error($code_, $text_);
         return;
