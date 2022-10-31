@@ -109,9 +109,9 @@ class F3App extends Prefab
      * @param int $code_
      * @return void
      */
-    public static function error(int $code_): void
+    public static function error(int $code_, string $text_): void
     {
-        self::$_f3->error($code_);
+        self::$_f3->error($code_, $text_);
         return;
     }
 
