@@ -129,6 +129,10 @@ final class ResponseService extends Prefab implements ServiceInterface
                 if (is_string(self::$_options['body']))
                     echo self::$_options['body'];
                 break;
+            case 'application/xml':
+                if (is_string(self::$_options['body']))
+                    echo self::$_options['body'];
+                break;
             case 'text/html':
                 echo Template::instance()->render('template.html');
                 break;
