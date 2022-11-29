@@ -134,7 +134,9 @@ final class ResponseService extends Prefab implements ServiceInterface
                     echo self::$_options['body'];
                 break;
             case 'text/html':
-                echo Template::instance()->render('template.html');
+                if (!empty(self::$_options['body']))
+                    echo self::$_options['body'];
+                else echo Template::instance()->render('template.html');
                 break;
         }
     }
