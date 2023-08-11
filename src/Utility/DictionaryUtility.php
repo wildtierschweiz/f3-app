@@ -16,12 +16,16 @@ class DictionaryUtility
     private Base $_f3;
     private FilesystemUtility $_fs;
     private array $_dictionary_parsed = [];
+    private string $_filename = '';
 
-
+    /**
+     * initialization
+     */
     function __construct()
     {
         $this->_f3 = Base::instance();
         $this->_fs = FilesystemUtility::instance();
+        $this->_filename = $this->detectFilename();
         $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_f3->get('PREFIX')));
     }
 
@@ -56,17 +60,19 @@ class DictionaryUtility
     /**
      * write data array to ini file
      * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
-     * @param string $file_name_ ini file to write to
-     * @param array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
+     * @param ?string $file_name_ ini file to write to
+     * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
      * @param bool $quote_strings_
      * @return int|false
      */
-    public function writeDictionaryIniFile(string $file_name_, array $dictionary_parsed_ = [], bool $quote_strings_ = false): int|false
+    public function writeDictionaryIniFile(?string $filename_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
     {
         $_result = [];
+        $_filename = ($filename_ !== NULL ? $filename_ : $this->_filename);
+        $_dictionary_parsed = ($dictionary_parsed_ !== NULL ? $dictionary_parsed_ : $this->_dictionary_parsed);
         $_section = '';
         $_dict_var_prefix = $this->_f3->get('PREFIX');
-        foreach ($dictionary_parsed_ as $k_ => $v_) {
+        foreach ($_dictionary_parsed as $k_ => $v_) {
             $_t = explode('.', (string)$k_);
             // remove prefix, if present
             if ($_t[0] === str_replace('.', '', $_dict_var_prefix))
@@ -85,7 +91,7 @@ class DictionaryUtility
             $_key = implode('.', $_t);
             $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
         }
-        return file_put_contents($file_name_, implode(self::FILE_LINE_BREAK, $_result));
+        return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
     }
 
     /**
@@ -117,11 +123,59 @@ class DictionaryUtility
     }
 
     /**
+     * detect the filename of the dictionary
+     * @return string
+     */
+    private function detectFilename(): string
+    {
+        $_language = explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '';
+        $_filename = $this->_f3->get('LOCALES') . $_language . '.ini';
+        return is_file($_filename) ? $_filename : '';
+    }
+
+    /**
      * get the parsed dictionary as one dimensional key value pairs
      * @return array
      */
     public function getDictionaryParsed(): array
     {
         return $this->_dictionary_parsed;
+    }
+
+    /**
+     * get dictionary entry
+     * @param $key_
+     * @return string
+     */
+    public function getEntry(string $key_): string
+    {
+        return (string)$this->_dictionary_parsed[$key_];
+    }
+
+    /**
+     * create or edit dictionary entry
+     * @param string $key_
+     * @param string $value_
+     * @param bool $write_to_file_
+     * @return void
+     */
+    public function setEntry(string $key_, string $value_ = '', bool $write_to_file_ = false): void
+    {
+        $this->_dictionary_parsed[$key_] = $value_;
+        if ($write_to_file_ === true)
+            $this->writeDictionaryIniFile();
+    }
+
+    /**
+     * create or edit dictionary entry
+     * @param string $key_
+     * @param bool $write_to_file_
+     * @return void
+     */
+    public function removeEntry(string $key_, bool $write_to_file_ = false): void
+    {
+        unset($this->_dictionary_parsed[$key_]);
+        if ($write_to_file_ === true)
+            $this->writeDictionaryIniFile();
     }
 }
