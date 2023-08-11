@@ -47,7 +47,8 @@ class DictionaryUtility
         // temporary switch framework language, to load correct dictionary
         $_t = $this->_f3->get('LANGUAGE');
         $this->_f3->set('LANGUAGE', $this->_language);
-        $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_prefix));
+        $_dictionary_vars = $this->_f3->get($this->_prefix) ?? [];
+        $this->_dictionary_parsed = $this->parseDictionary($_dictionary_vars);
         $this->_f3->set('LANGUAGE', $_t);
     }
 
