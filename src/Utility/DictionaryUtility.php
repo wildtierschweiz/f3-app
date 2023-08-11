@@ -33,14 +33,16 @@ class DictionaryUtility
     {
         $this->_f3 = Base::instance();
         $this->_fs = FilesystemUtility::instance();
-        $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
-        $this->_filename = $this->detectFilename(true);
-        $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
 
-        // path names
+        // paths and file names related
         $this->_path_dictionaries = $this->_f3->get('LOCALES');
         $this->_path_views = $this->_f3->get('UI');
         $this->_path_source = $this->_f3->get('application.sourcedir');
+        $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
+        $this->_filename = $this->detectFilename(true);
+
+        // key related
+        $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
 
         // temporary switch framework language, to load correct dictionary
         $_t = $this->_f3->get('LANGUAGE');
