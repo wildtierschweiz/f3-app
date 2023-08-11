@@ -214,4 +214,14 @@ class DictionaryUtility
         if ($write_to_file_ === true)
             $this->writeDictionaryIniFile();
     }
+
+    /**
+     * delete the entire dictionary
+     * @return bool
+     */
+    public function removeDictionary(): bool
+    {
+        $_filename = $this->detectFilename();
+        return unlink($_filename);
+    }
 }
