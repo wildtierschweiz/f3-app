@@ -17,14 +17,16 @@ class DictionaryUtility
     private FilesystemUtility $_fs;
     private array $_dictionary_parsed = [];
     private string $_filename = '';
+    private string $_language = '';
 
     /**
      * initialization
      */
-    function __construct()
+    function __construct(?string $language_ = NULL)
     {
         $this->_f3 = Base::instance();
         $this->_fs = FilesystemUtility::instance();
+        $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
         $this->_filename = $this->detectFilename();
         $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_f3->get('PREFIX')));
     }
@@ -128,8 +130,7 @@ class DictionaryUtility
      */
     private function detectFilename(): string
     {
-        $_language = explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '';
-        $_filename = $this->_f3->get('LOCALES') . $_language . '.ini';
+        $_filename = $this->_f3->get('LOCALES') . $this->_language . '.ini';
         return is_file($_filename) ? $_filename : '';
     }
 
@@ -145,11 +146,11 @@ class DictionaryUtility
     /**
      * get dictionary entry
      * @param $key_
-     * @return string
+     * @return string|null
      */
-    public function getEntry(string $key_): string
+    public function getEntry(string $key_): string|NULL
     {
-        return (string)$this->_dictionary_parsed[$key_];
+        return $this->_dictionary_parsed[$key_] ?? NULL;
     }
 
     /**
