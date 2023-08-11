@@ -91,10 +91,7 @@ class DictionaryUtility
                 $_section = $_t['section'];
                 $_result[] = '[' . $_section . ']';
             }
-            // remove section from key name
-            array_shift($_t);
-            // key name without section and prefix
-            $_key = implode('.', $_t);
+            $_key = $_t['key'];
             $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
         }
         return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
