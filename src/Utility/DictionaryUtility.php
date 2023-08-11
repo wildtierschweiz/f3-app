@@ -38,7 +38,7 @@ class DictionaryUtility
         $this->_path_dictionaries = $this->_f3->get('LOCALES');
         $this->_path_views = $this->_f3->get('UI');
         $this->_path_source = $this->_f3->get('application.sourcedir');
-        $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
+        $this->_language = $language_ ?? $this->detectLanguage();
         $this->_filename = $this->detectFilename(true);
 
         // key related
@@ -168,6 +168,18 @@ class DictionaryUtility
         if (!is_file($_filename) && $create_if_not_exists_ === true)
             file_put_contents($_filename, '');
         return is_file($_filename) ? $_filename : '';
+    }
+
+    /**
+     * detect the current framework language
+     * @return string
+     */
+    private function detectLanguage(): string
+    {
+        $_language = (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
+        if (!$_language)
+            $_language = (explode(',', $this->_f3->get('FALLBACK'))[0] ?? '');
+        return $_language;        
     }
 
     /**
