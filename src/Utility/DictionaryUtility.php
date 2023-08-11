@@ -103,11 +103,14 @@ class DictionaryUtility
      */
     public function parseKey(string $key_): array
     {
-        $_result = explode('.', (string)$key_, 3);
+        $_t = explode('.', (string)$key_, 3);
+        $_parts_count = count($_t);
+        $_has_prefix = $this->_prefix === $_t[0];
+        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
         $_result = [
-            'prefix' => $this->_prefix === $_result[0] ? $_result[0] : '',
-            'section' => $_result[1],
-            'key' => $_result[2],
+            'prefix' => $_has_prefix ? $_t[0] : '',
+            'section' => $_t[$_has_prefix ? 1 : 0],
+            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
         ];
         return $_result;
     }
