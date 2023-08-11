@@ -23,15 +23,6 @@ final class LogService extends Prefab implements ServiceInterface
     }
 
     /**
-     * get service instance
-     * @return Log|null
-     */
-    public static function getService()
-    {
-        return self::$_service;
-    }
-
-    /**
      * get service options
      * @return array
      */
@@ -60,5 +51,14 @@ final class LogService extends Prefab implements ServiceInterface
     public static function erase(): void
     {
         self::$_service->erase();
+    }
+
+    /**
+     * get service instance
+     * @return Log|null
+     */
+    public static function getService(): Log|NULL
+    {
+        return self::$_service;
     }
 }

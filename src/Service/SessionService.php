@@ -169,7 +169,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * get service instance
      * @return Session|SQLSession|MongoSession|JigSession|null
      */
-    public static function getService()
+    public static function getService(): Session|SQLSession|MongoSession|JigSession|NULL
     {
         return self::$_service;
     }

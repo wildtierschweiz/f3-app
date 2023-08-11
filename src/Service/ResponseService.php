@@ -143,9 +143,9 @@ final class ResponseService extends Prefab implements ServiceInterface
 
     /**
      * get service instance
-     * @return 
+     * @return null
      */
-    public static function getService()
+    public static function getService(): NULL
     {
         return self::$_service;
     }

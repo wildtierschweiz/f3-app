@@ -25,7 +25,7 @@ final class LocationService extends Prefab implements ServiceInterface
     private static Geo $_service;
     private static Base $_f3;
     private static Audit $_f3_audit;
-    
+
     /**
      * service constructor
      * @param array $options_
@@ -73,16 +73,17 @@ final class LocationService extends Prefab implements ServiceInterface
     private static function setLocation(): void
     {
         self::$_f3->set(
-            self::$_options['storage'], 
-            self::$_service->location()['country_code'] 
+            self::$_options['storage'],
+            self::$_service->location()['country_code']
                 ?? self::$_options['defaultlocation']
         );
     }
 
     /**
      * returns instance of location service
+     * @return Geo|null
      */
-    public static function getService()
+    public static function getService(): Geo|NULL
     {
         return self::$_service;
     }

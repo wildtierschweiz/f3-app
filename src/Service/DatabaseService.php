@@ -65,7 +65,7 @@ final class DatabaseService extends Prefab implements ServiceInterface
      * get service instance
      * @return SQL|Mongo|Jig|null
      */
-    public static function getService()
+    public static function getService(): SQL|Mongo|Jig|NULL
     {
         return self::$_service;
     }

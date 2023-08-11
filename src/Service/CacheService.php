@@ -42,7 +42,7 @@ final class CacheService extends Prefab implements ServiceInterface
      * get service instance
      * @return Cache|null
      */
-    public static function getService()
+    public static function getService(): Cache|NULL
     {
         return self::$_service;
     }

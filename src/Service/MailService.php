@@ -61,7 +61,7 @@ final class MailService extends Prefab implements ServiceInterface
      * get service instance
      * @return SMTP|null
      */
-    public static function getService()
+    public static function getService(): SMTP|NULL
     {
         return self::$_service;
     }
