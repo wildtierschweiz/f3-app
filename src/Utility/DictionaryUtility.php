@@ -21,6 +21,10 @@ class DictionaryUtility
     private string $_prefix = '';
     private array $_dictionary_parsed = [];
 
+    private string $_path_dictionaries = '';
+    private string $_path_views = '';
+    private string $_path_source = '';
+
     /**
      * initialization
      * @param ?string $language_
@@ -30,8 +34,13 @@ class DictionaryUtility
         $this->_f3 = Base::instance();
         $this->_fs = FilesystemUtility::instance();
         $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
-        $this->_filename = $this->detectFilename();
+        $this->_filename = $this->detectFilename(true);
         $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
+
+        // path names
+        $this->_path_dictionaries = $this->_f3->get('LOCALES');
+        $this->_path_views = $this->_f3->get('UI');
+        $this->_path_source = $this->_f3->get('application.sourcedir');
 
         // temporary switch framework language, to load correct dictionary
         $_t = $this->_f3->get('LANGUAGE');
@@ -42,7 +51,7 @@ class DictionaryUtility
 
     /**
      * parse dictionary to single level
-     * @param array $dictionary_node_ = []
+     * @param array $dictionary_node_
      * @return array
      */
     private function parseDictionary(array $dictionary_node_ = []): array
@@ -70,7 +79,7 @@ class DictionaryUtility
     /**
      * write data array to ini file
      * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
-     * @param ?string $file_name_ ini file to write to
+     * @param ?string $file_name_ path and file name to write to
      * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
      * @param bool $quote_strings_
      * @return int|false
@@ -126,10 +135,8 @@ class DictionaryUtility
     {
         $_i = 0;
         $_files_directories = [
-            // src directory
-            $this->_f3->get('application.sourcedir'),
-            // view templates directory
-            $this->_f3->get('UI'),
+            $this->_path_source,
+            $this->_path_views,
         ];
         $_files_names = [];
         foreach ($_files_directories as $dir_)
@@ -137,19 +144,26 @@ class DictionaryUtility
         $_t = '(' . ($key_ !== '' ? $key_ : implode('|', array_keys($this->_dictionary_parsed))) . ')';
         foreach ($_files_names as $file_) {
             $_contents = file_get_contents($file_);
-            if (preg_match($_t, $_contents) === 1)
+            if (preg_match($_t, $_contents) === 1) {
+                if ($filenames_ !== NULL)
+                    $filenames_[] = $file_;
                 $_i++;
+            }
         }
         return $_i;
     }
 
     /**
-     * detect the filename of the dictionary
+     * detect the filename of the dictionary and optionally create dictionary, if not exists for 
+     * the chosen language
+     * @param bool $create_if_not_exists_
      * @return string
      */
-    private function detectFilename(): string
+    private function detectFilename(bool $create_if_not_exists_ = false): string
     {
-        $_filename = $this->_f3->get('LOCALES') . $this->_language . '.ini';
+        $_filename = $this->_path_dictionaries . $this->_language . '.ini';
+        if (!is_file($_filename) && $create_if_not_exists_ === true)
+            file_put_contents($_filename, '');
         return is_file($_filename) ? $_filename : '';
     }
 
@@ -163,7 +177,7 @@ class DictionaryUtility
     }
 
     /**
-     * get dictionary entry
+     * get entry from current dictionary
      * @param $key_
      * @return string|null
      */
@@ -173,7 +187,7 @@ class DictionaryUtility
     }
 
     /**
-     * create or edit dictionary entry
+     * create or edit entry of current dictionary
      * @param string $key_
      * @param string $value_
      * @param bool $write_to_file_
@@ -187,7 +201,7 @@ class DictionaryUtility
     }
 
     /**
-     * create or edit dictionary entry
+     * remove entry from current dictionary
      * @param string $key_
      * @param bool $write_to_file_
      * @return void
