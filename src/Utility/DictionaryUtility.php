@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WildtierSchweiz\F3App\Utility;
 
 use Base;
-use Prefab;
 
 /**
  * language dictionary utility
