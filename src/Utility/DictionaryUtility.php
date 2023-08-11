@@ -18,9 +18,11 @@ class DictionaryUtility
     private array $_dictionary_parsed = [];
     private string $_filename = '';
     private string $_language = '';
+    private string $_prefix = '';
 
     /**
      * initialization
+     * @param ?string $language_
      */
     function __construct(?string $language_ = NULL)
     {
@@ -28,7 +30,11 @@ class DictionaryUtility
         $this->_fs = FilesystemUtility::instance();
         $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
         $this->_filename = $this->detectFilename();
-        $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_f3->get('PREFIX')));
+        $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
+        $_t = $this->_f3->get('LANGUAGE');
+        $this->_f3->set('LANGUAGE', $this->_language);
+        $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_prefix));
+        $this->_f3->set('LANGUAGE', $_t);
     }
 
     /**
@@ -38,12 +44,11 @@ class DictionaryUtility
      */
     private function parseDictionary(array $dictionary_node_ = []): array
     {
-        $_dict_var_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
         static $_result = [];
         static $_stack_keys = [];
         // add the prefix to the keys, one time
-        if (!in_array($_dict_var_prefix, $_stack_keys))
-            $_stack_keys[] = $_dict_var_prefix;
+        if (!in_array($this->_prefix, $_stack_keys))
+            $_stack_keys[] = $this->_prefix;
         // add dictionary node to the result
         foreach ($dictionary_node_ as $k_ => $v_) {
             // add new key to stack
@@ -73,11 +78,10 @@ class DictionaryUtility
         $_filename = ($filename_ !== NULL ? $filename_ : $this->_filename);
         $_dictionary_parsed = ($dictionary_parsed_ !== NULL ? $dictionary_parsed_ : $this->_dictionary_parsed);
         $_section = '';
-        $_dict_var_prefix = $this->_f3->get('PREFIX');
         foreach ($_dictionary_parsed as $k_ => $v_) {
             $_t = explode('.', (string)$k_);
             // remove prefix, if present
-            if ($_t[0] === str_replace('.', '', $_dict_var_prefix))
+            if ($_t[0] === $this->_prefix)
                 array_shift($_t);
             // if first section or next section
             if ($_section === '' || $_t[0] !== $_section) {
