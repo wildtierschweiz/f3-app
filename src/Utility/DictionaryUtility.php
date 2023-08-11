@@ -8,6 +8,7 @@ use Base;
 
 /**
  * language dictionary utility
+ * @author Wildtier Schweiz
  */
 class DictionaryUtility
 {
@@ -15,10 +16,10 @@ class DictionaryUtility
 
     private Base $_f3;
     private FilesystemUtility $_fs;
-    private array $_dictionary_parsed = [];
-    private string $_filename = '';
     private string $_language = '';
+    private string $_filename = '';
     private string $_prefix = '';
+    private array $_dictionary_parsed = [];
 
     /**
      * initialization
@@ -31,6 +32,8 @@ class DictionaryUtility
         $this->_language = $language_ ?? (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
         $this->_filename = $this->detectFilename();
         $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
+
+        // temporary switch framework language, to load correct dictionary
         $_t = $this->_f3->get('LANGUAGE');
         $this->_f3->set('LANGUAGE', $this->_language);
         $this->_dictionary_parsed = $this->parseDictionary($this->_f3->get($this->_prefix));
@@ -103,12 +106,13 @@ class DictionaryUtility
     /**
      * check if a dictionary var is used in backend of frontend code
      * @param string $key_
+     * @param string $filename_filter_
+     * @param array &$filenames_ (optional) retrieve filenames containing the keys
      * @return int
      */
-    public function checkDictionaryUsage(string $key_ = ''): int
+    public function checkDictionaryUsage(string $key_ = '', string $filename_filter_ = '/(?i:^.*\.(php|htm|html)$)/m', array &$filenames_ = NULL): int
     {
         $_i = 0;
-        $_files_filter = '/(?i:^.*\.(php|htm|html)$)/m';
         $_files_directories = [
             // src directory
             $this->_f3->get('application.sourcedir'),
@@ -117,12 +121,11 @@ class DictionaryUtility
         ];
         $_files_names = [];
         foreach ($_files_directories as $dir_)
-            $_files_names = array_merge($_files_names, $this->_fs::recursiveDirectorySearch($dir_, $_files_filter));
+            $_files_names = array_merge($_files_names, $this->_fs::recursiveDirectorySearch($dir_, $filename_filter_));
         $_t = '(' . ($key_ !== '' ? $key_ : implode('|', array_keys($this->_dictionary_parsed))) . ')';
         foreach ($_files_names as $file_) {
             $_contents = file_get_contents($file_);
             if (preg_match($_t, $_contents) === 1)
-                //if (str_contains($_contents, $hive_key_))
                 $_i++;
         }
         return $_i;
