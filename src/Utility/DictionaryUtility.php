@@ -99,9 +99,9 @@ class DictionaryUtility
         $_files_filter = '/(?i:^.*\.(php|htm|html)$)/m';
         $_files_directories = [
             // src or autoload directory
-            __DIR__ . '/../',
+            $this->_f3->get('application.sourcedir'),
             // frontend view templates directory
-            __DIR__ . '/../../template/',
+            $this->_f3->get('UI'),
         ];
         $_files_names = [];
         foreach ($_files_directories as $dir_)
