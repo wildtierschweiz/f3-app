@@ -82,16 +82,13 @@ class DictionaryUtility
         $_dictionary_parsed = ($dictionary_parsed_ !== NULL ? $dictionary_parsed_ : $this->_dictionary_parsed);
         $_section = '';
         foreach ($_dictionary_parsed as $k_ => $v_) {
-            $_t = explode('.', (string)$k_);
-            // remove prefix, if present
-            if ($_t[0] === $this->_prefix)
-                array_shift($_t);
+            $_t = $this->parseKey((string)$k_);
             // if first section or next section
-            if ($_section === '' || $_t[0] !== $_section) {
+            if ($_section === '' || $_t['section'] !== $_section) {
                 // if previous section exists
                 if ($_section !== '')
                     $_result[] = '';
-                $_section = $_t[0];
+                $_section = $_t['section'];
                 $_result[] = '[' . $_section . ']';
             }
             // remove section from key name
@@ -101,6 +98,21 @@ class DictionaryUtility
             $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
         }
         return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
+    }
+
+    /**
+     * parse a dictionary key to parts
+     * @param string $key_
+     */
+    public function parseKey(string $key_): array
+    {
+        $_result = explode('.', (string)$key_, 3);
+        $_result = [
+            'prefix' => $this->_prefix === $_result[0] ? $_result[0] : '',
+            'section' => $_result[1],
+            'key' => $_result[2],
+        ];
+        return $_result;
     }
 
     /**
