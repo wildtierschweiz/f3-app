@@ -21,35 +21,27 @@ class DictionaryUtility
     private string $_prefix = '';
     private array $_dictionary_parsed = [];
 
-    private string $_path_dictionaries = '';
     private string $_path_views = '';
     private string $_path_source = '';
 
     /**
      * initialization
-     * @param ?string $language_
+     * @param string $language_
+     * @param array $dictdata_
      */
-    function __construct(?string $language_ = NULL)
+    function __construct(string $language_ = NULL, array $dictdata_ = [])
     {
         $this->_f3 = Base::instance();
         $this->_fs = FilesystemUtility::instance();
 
         // paths and file names related
-        $this->_path_dictionaries = $this->_f3->get('LOCALES');
         $this->_path_views = $this->_f3->get('UI');
         $this->_path_source = $this->_f3->get('application.sourcedir');
-        $this->_language = $language_ ?? $this->detectLanguage();
         $this->_filename = $this->detectFilename(true);
 
         // key related
         $this->_prefix = str_replace('.', '', $this->_f3->get('PREFIX'));
-
-        // temporary switch framework language, to load correct dictionary
-        $_t = $this->_f3->get('LANGUAGE');
-        $this->_f3->set('LANGUAGE', $this->_language);
-        $_dictionary_vars = $this->_f3->get($this->_prefix) ?? [];
-        $this->_dictionary_parsed = $this->parseDictionary($_dictionary_vars);
-        $this->_f3->set('LANGUAGE', $_t);
+        $this->_dictionary_parsed = $this->parseDictionary($dictdata_);
     }
 
     /**
@@ -154,32 +146,6 @@ class DictionaryUtility
             }
         }
         return $_i;
-    }
-
-    /**
-     * detect the filename of the dictionary and optionally create dictionary, if not exists for 
-     * the chosen language
-     * @param bool $create_if_not_exists_
-     * @return string
-     */
-    private function detectFilename(bool $create_if_not_exists_ = false): string
-    {
-        $_filename = $this->_path_dictionaries . $this->_language . '.ini';
-        if (!is_file($_filename) && $create_if_not_exists_ === true)
-            file_put_contents($_filename, '');
-        return is_file($_filename) ? $_filename : '';
-    }
-
-    /**
-     * detect the current framework language
-     * @return string
-     */
-    private function detectLanguage(): string
-    {
-        $_language = (explode(',', $this->_f3->get('LANGUAGE'))[0] ?? '');
-        if (!$_language)
-            $_language = (explode(',', $this->_f3->get('FALLBACK'))[0] ?? '');
-        return $_language;        
     }
 
     /**
