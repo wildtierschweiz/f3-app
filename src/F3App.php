@@ -54,9 +54,22 @@ class F3App extends Prefab
             'path' => self::$_options['config_path'],
             'allow' => self::$_options['config_allow']
         ]);
-        foreach (self::$_f3->get('CONF._services') as $name_ => $class_)
-            if ((int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
-                self::register($name_, $class_, self::$_f3->get('CONF.' . $name_));
+        self::serviceBootloader(0);
+    }
+
+    /**
+     * boot load service classes
+     * @param int $stage_id_ 0: on app construction / 1: before route
+     */
+    private static function serviceBootloader(int $stage_id_ = 0): void
+    {
+        foreach (self::$_f3->get('CONF._services') as $name_ => $class_) {
+            $_t = explode(',', $class_);
+            $_class = $_t[0];
+            if ((int)($_t[1] ?? 0) === $stage_id_)
+                if ((int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
+                    self::register($name_, $_class, self::$_f3->get('CONF.' . $name_));
+        }
     }
 
     /**
@@ -67,6 +80,7 @@ class F3App extends Prefab
      */
     public static function beforeroute(Base $f3_): void
     {
+        self::serviceBootloader(1);
         $_session = self::service('session');
         if (!$f3_->get('PARAMS.page'))
             $f3_->set('PARAMS.page', self::$_options['default_page']);
