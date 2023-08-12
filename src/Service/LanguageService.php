@@ -69,6 +69,19 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
+     * redirect to language with current path and querystring
+     * @param string $language_
+     * @return null|false
+     */
+    protected static function redirectLanguage(string $language_): NULL|false
+    {
+        if (!self::isAvailableLanguage($language_))
+            return false;
+        $_query = self::$_f3->get('QUERY');
+        return self::$_f3->reroute('/' . $language_ . '/' . self::$_f3->get('PARAMS.page') . ($_query ? '?' . $_query : ''));
+    }
+
+    /**
      * load dictionary data of a language
      * @param string $language_
      * @return void
