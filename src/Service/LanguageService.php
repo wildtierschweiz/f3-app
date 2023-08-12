@@ -26,7 +26,7 @@ final class LanguageService extends Prefab implements ServiceInterface
     private static FilesystemUtility $_filesystem;
     private static DictionaryUtility $_service;
     private static array $_options = [];
-    private static array $_dictionary_parsed = [];
+    private static array $_dictionary_data = [];
 
     /**
      * constructor
@@ -49,8 +49,8 @@ final class LanguageService extends Prefab implements ServiceInterface
             $options_
         );
         $_current_language = self::getCurrentLanguage(true);
-        self::$_dictionary_parsed = self::parseDictionary(self::getDictionaryData($_current_language));
-        self::$_service = new DictionaryUtility(self::$_dictionary_parsed);
+        self::$_dictionary_data = self::parseDictionary(self::getDictionaryData($_current_language));
+        self::$_service = new DictionaryUtility(self::$_dictionary_data);
     }
 
     /**
@@ -61,8 +61,8 @@ final class LanguageService extends Prefab implements ServiceInterface
     public static function loadDictionaryData(string $language_ = ''): void
     {
         $_language = self::getCurrentLanguage(true);
-        self::$_dictionary_parsed = self::parseDictionary(self::getDictionaryData($_language));
-        self::$_service = new DictionaryUtility(self::$_dictionary_parsed);
+        self::$_dictionary_data = self::parseDictionary(self::getDictionaryData($_language));
+        self::$_service = new DictionaryUtility(self::$_dictionary_data);
         return;
     }
 
@@ -88,17 +88,18 @@ final class LanguageService extends Prefab implements ServiceInterface
      * write data array to ini file
      * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
      * @param ?string $file_name_ path and file name to write to
-     * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
+     * @param ?array $dictionary_data_ flat dimensional key value pairs of the dictionary
      * @param bool $quote_strings_
      * @return int|false
      */
-    public static function writeDictionaryFile(?string $filename_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
+    public static function writeDictionaryFile(?string $language_ = NULL, ?array $dictionary_data_ = NULL, bool $quote_strings_ = false): int|false
     {
         $_result = [];
-        $_filename = $filename_ ?? $this->_filename;
-        $_dictionary_parsed = $dictionary_parsed_ ?? self::$_dictionary_parsed;
+        $_language = $language_ ?? self::getCurrentLanguage(false);
+        $_dictionary_data = $dictionary_data_ ?? self::$_dictionary_data;
+        $_filename = self::getDictionaryFilename($_language);
         $_section = '';
-        foreach ($_dictionary_parsed as $k_ => $v_) {
+        foreach ($_dictionary_data as $k_ => $v_) {
             $_t = self::parseKey((string)$k_);
             // if first section or next section
             if ($_section === '' || $_t['section'] !== $_section) {
@@ -115,30 +116,13 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
-     * get dictionary data for a language
-     * also contains fallback values, not present in the language requested (f3 standard)
-     * @param string $language_
-     * @return array
-     */
-    private static function getDictionaryData(string $language_ = ''): array
-    {
-        $_language = $language_ ?: self::getCurrentLanguage(true);
-        $_t = self::$_f3->get('LANGUAGE');
-        self::$_f3->set('LANGUAGE', $_language);
-        $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
-        self::$_f3->set('LANGUAGE', $_t);
-        return $_result;
-    }
-
-    /**
      * delete the entire dictionary
      * @return bool
      */
     public static function removeDictionary(string $language_ = ''): bool
     {
         $_language = $language_ ?: self::getCurrentLanguage(false);
-        $_filename = self::$_options['dictionarypath'] . $_language . '.ini';
-        return unlink($_filename);
+        return unlink(self::getDictionaryFilename($_language));
     }
 
     /**
@@ -212,7 +196,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         $_files_names = [];
         foreach (self::$_options['sourcepaths'] ?? [] as $dir_)
             $_files_names = array_merge($_files_names, self::$_filesystem::recursiveDirectorySearch($dir_, self::$_options['sourcefilefilter']));
-        $_t = '(' . ($key_ !== '' ? $key_ : implode('|', array_keys(self::$_dictionary_parsed))) . ')';
+        $_t = '(' . ($key_ !== '' ? $key_ : implode('|', array_keys(self::$_dictionary_data))) . ')';
         foreach ($_files_names as $file_) {
             $_contents = file_get_contents($file_);
             if (preg_match($_t, $_contents) === 1) {
@@ -249,5 +233,32 @@ final class LanguageService extends Prefab implements ServiceInterface
             while (($_t = array_pop($_stack_keys)) && $_t !== $k_);
         }
         return $_result;
+    }
+
+    /**
+     * get dictionary data for a language
+     * also contains fallback values, not present in the language requested (f3 standard)
+     * @param string $language_
+     * @return array
+     */
+    private static function getDictionaryData(string $language_ = ''): array
+    {
+        $_language = $language_ ?: self::getCurrentLanguage(true);
+        $_t = self::$_f3->get('LANGUAGE');
+        self::$_f3->set('LANGUAGE', $_language);
+        $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
+        self::$_f3->set('LANGUAGE', $_t);
+        return $_result;
+    }
+
+    /**
+     * get filename of a language dictionary
+     * @param string $language_
+     * @return string
+     */
+    private static function getDictionaryFilename(string $language_): string
+    {
+        $_language = $language_ ?: self::getCurrentLanguage(true);
+        return self::$_options['dictionarypath'] . $_language . '.ini';
     }
 }
