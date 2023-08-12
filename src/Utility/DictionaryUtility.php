@@ -27,7 +27,7 @@ class DictionaryUtility
      * get the parsed dictionary as one dimensional key value pairs
      * @return array
      */
-    public function getDictionary(): array
+    public function getDictionaryData(): array
     {
         return $this->_dictionary_data;
     }
@@ -46,7 +46,6 @@ class DictionaryUtility
      * create or edit entry of current dictionary
      * @param string $key_
      * @param string $value_
-     * @param bool $write_to_file_
      * @return void
      */
     public function setEntry(string $key_, string $value_ = ''): void
@@ -57,7 +56,6 @@ class DictionaryUtility
     /**
      * remove entry from current dictionary
      * @param string $key_
-     * @param bool $write_to_file_
      * @return void
      */
     public function removeEntry(string $key_): void
