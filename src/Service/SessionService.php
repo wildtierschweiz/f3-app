@@ -165,6 +165,14 @@ final class SessionService extends Prefab implements ServiceInterface
         self::$_f3->clear('SESSION._message');
     }
 
+    public static function addFlashMessage(string $text_, string $type_ = 'info'): void
+    {
+        self::$_f3->push('SESSION._message', [
+            'type' => $type_,
+            'text' => $text_,
+        ]);
+    }
+
     /**
      * get service instance
      * @return Session|SQLSession|MongoSession|JigSession|null
