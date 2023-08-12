@@ -79,7 +79,7 @@ final class LanguageService extends Prefab implements ServiceInterface
     {
         $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
         if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
-            $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
+            $_language = explode(',', self::getDefaultLanguage());
         return $_language;
     }
 
@@ -121,6 +121,30 @@ final class LanguageService extends Prefab implements ServiceInterface
             return false;
         $_query = self::$_f3->get('QUERY');
         return self::$_f3->reroute('/' . $language_ . '/' . self::$_f3->get('PARAMS.page') . ($_query ? '?' . $_query : ''));
+    }
+
+    /**
+     * get the framework default language
+     * @return string
+     */
+    public function getDefaultLanguage(): string
+    {
+        return explode(',', self::$_f3->get('FALLBACK'))[0] ?? '';
+    }
+
+    /**
+     * switch language without redirect
+     * used for inline applications
+     * @param string $language_
+     * @return void
+     */
+    public static function switchLanguage(string $language_): void
+    {
+        $_language = $language_;
+        if (!self::isAvailableLanguage($_language))
+            $_language = self::getDefaultLanguage();
+        self::$_f3->set('PARAMS.lang', $_language);
+        self::$_f3->set('LANGUAGE', $_language);
     }
 
     /**
