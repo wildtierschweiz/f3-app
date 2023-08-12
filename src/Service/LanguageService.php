@@ -60,7 +60,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function loadDictionaryData(string $language_ = ''): void
     {
-        $_language = self::getCurrentLanguage(true);
+        $_language = self::getCurrentLanguage(false);
         self::$_dictionary_data = self::parseDictionary(self::getDictionaryData($_language));
         self::$_service = new DictionaryUtility(self::$_dictionary_data);
         return;
@@ -243,7 +243,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     private static function getDictionaryData(string $language_ = ''): array
     {
-        $_language = $language_ ?: self::getCurrentLanguage(true);
+        $_language = $language_ ?: self::getCurrentLanguage(false);
         $_t = self::$_f3->get('LANGUAGE');
         self::$_f3->set('LANGUAGE', $_language);
         $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
@@ -258,7 +258,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     private static function getDictionaryFilename(string $language_): string
     {
-        $_language = $language_ ?: self::getCurrentLanguage(true);
+        $_language = $language_ ?: self::getCurrentLanguage(false);
         return self::$_options['dictionarypath'] . $_language . '.ini';
     }
 }
