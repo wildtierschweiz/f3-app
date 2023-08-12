@@ -64,8 +64,13 @@ class F3App extends Prefab
     private static function serviceBootloader(int $stage_ = 0): void
     {
         foreach (self::$_f3->get('CONF._services') as $name_ => $class_) {
-            $_class = $class_[0];
-            $_stage = (int)($class_[1] ?? 0);
+            if (is_array($class_)) {
+                $_class = $class_[0];
+                $_stage = (int)($class_[1] ?? 0);
+            } else {
+                $_class = $class_;
+                $_stage = 0;
+            }
             if ($_stage === $stage_ && (int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
                 self::register($name_, $_class, self::$_f3->get('CONF.' . $name_));
         }
