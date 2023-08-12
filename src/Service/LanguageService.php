@@ -7,7 +7,6 @@ namespace WildtierSchweiz\F3App\Service;
 use Base;
 use Prefab;
 use WildtierSchweiz\F3App\Iface\ServiceInterface;
-use WildtierSchweiz\F3App\Utility\DictionaryUtility;
 use WildtierSchweiz\F3App\Utility\FilesystemUtility;
 
 /**
@@ -144,6 +143,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         self::$_dictionary_data[$key_] = $value_;
         if ($write_to_file_ === true)
             self::writeDictionaryFile();
+        return;
     }
 
     /**
@@ -157,6 +157,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         unset(self::$_dictionary_data[$key_]);
         if ($write_to_file_ === true)
             self::writeDictionaryFile();
+        return;
     }
 
     /**
