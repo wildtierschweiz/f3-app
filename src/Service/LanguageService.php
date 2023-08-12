@@ -46,6 +46,8 @@ final class LanguageService extends Prefab implements ServiceInterface
             ],
             $options_
         );
+        // adjust some options
+        self::$_options['dictionaryprefix'] = str_replace('.', '', self::$_options['dictionaryprefix']);
         // populating service property initially
         self::loadDictionaryData(self::getCurrentLanguage(true));
     }
