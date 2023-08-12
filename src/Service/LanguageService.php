@@ -69,6 +69,46 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
+     * get the current framework language code
+     * @param $fallback_on_unavailable_
+     * @return string 
+     */
+    public static function getCurrentLanguage(bool $fallback_on_unavailable_ = false): string
+    {
+        $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
+        if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
+            $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
+        return $_language;
+    }
+
+    /**
+     * get available languages 
+     * based on existing language dictionary files
+     * @return array
+     */
+    public static function getAvailableLanguages(): array
+    {
+        $_result = [];
+        $_filenames = self::$_filesystem::recursiveDirectorySearch(self::$_options['dictionarypath'], self::$_options['dictionaryfilefilter']);
+        foreach ($_filenames as $file_) {
+            $_t = explode('.', array_pop(explode(DIRECTORY_SEPARATOR, $file_)))[0];
+            $_result[] = $_t;
+        }
+        return $_result;
+    }
+
+    /**
+     * check if a language is available 
+     * based on existing language dictionary files
+     * @param string $language_
+     * @return bool
+     */
+    public static function isAvailableLanguage(string $language_): bool
+    {
+        return in_array($language_, self::getAvailableLanguages());
+    }
+
+    /**
      * redirect to language with current path and querystring
      * @param string $language_
      * @return null|false
@@ -190,43 +230,21 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
-     * get the current framework language code
-     * @param $fallback_on_unavailable_
-     * @return string 
+     * parse a dictionary key to parts
+     * @param string $key_
      */
-    public static function getCurrentLanguage(bool $fallback_on_unavailable_ = false): string
+    public static function parseKey(string $key_): array
     {
-        $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
-        if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
-            $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
-        return $_language;
-    }
-
-    /**
-     * get available languages 
-     * based on existing language dictionary files
-     * @return array
-     */
-    public static function getAvailableLanguages(): array
-    {
-        $_result = [];
-        $_filenames = self::$_filesystem::recursiveDirectorySearch(self::$_options['dictionarypath'], self::$_options['dictionaryfilefilter']);
-        foreach ($_filenames as $file_) {
-            $_t = explode('.', array_pop(explode(DIRECTORY_SEPARATOR, $file_)))[0];
-            $_result[] = $_t;
-        }
+        $_t = explode('.', (string)$key_, 3);
+        $_parts_count = count($_t);
+        $_has_prefix = self::$_options['dictionaryprefix'] === $_t[0];
+        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
+        $_result = [
+            'prefix' => $_has_prefix ? $_t[0] : '',
+            'section' => $_t[$_has_prefix ? 1 : 0],
+            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
+        ];
         return $_result;
-    }
-
-    /**
-     * check if a language is available 
-     * based on existing language dictionary files
-     * @param string $language_
-     * @return bool
-     */
-    public static function isAvailableLanguage(string $language_): bool
-    {
-        return in_array($language_, self::getAvailableLanguages());
     }
 
     /**
@@ -278,24 +296,6 @@ final class LanguageService extends Prefab implements ServiceInterface
             // cleanup key
             while (($_t = array_pop($_stack_keys)) && $_t !== $k_);
         }
-        return $_result;
-    }
-
-    /**
-     * parse a dictionary key to parts
-     * @param string $key_
-     */
-    private static function parseKey(string $key_): array
-    {
-        $_t = explode('.', (string)$key_, 3);
-        $_parts_count = count($_t);
-        $_has_prefix = self::$_options['dictionaryprefix'] === $_t[0];
-        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
-        $_result = [
-            'prefix' => $_has_prefix ? $_t[0] : '',
-            'section' => $_t[$_has_prefix ? 1 : 0],
-            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
-        ];
         return $_result;
     }
 
