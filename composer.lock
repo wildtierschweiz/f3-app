@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "02b1178f8958be60452e0654a25d93c6",
+    "content-hash": "1a9a48109cb4ee7426b2ba6ffb33131a",
     "packages": [
         {
             "name": "bcosca/fatfree-core",
-            "version": "3.8.1",
+            "version": "3.8.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/bcosca/fatfree-core.git",
-                "reference": "f6ea45472f55a1ecabd4ced74cb56f0efd6af34e"
+                "url": "https://github.com/f3-factory/fatfree-core.git",
+                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bcosca/fatfree-core/zipball/f6ea45472f55a1ecabd4ced74cb56f0efd6af34e",
-                "reference": "f6ea45472f55a1ecabd4ced74cb56f0efd6af34e",
+                "url": "https://api.github.com/repos/f3-factory/fatfree-core/zipball/774692ce7698904d3cb35bbd4f79376bb17eeddc",
+                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc",
                 "shasum": ""
             },
             "require": {
@@ -36,10 +36,10 @@
             "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
             "homepage": "http://fatfreeframework.com/",
             "support": {
-                "issues": "https://github.com/bcosca/fatfree-core/issues",
-                "source": "https://github.com/bcosca/fatfree-core/tree/3.8.1"
+                "issues": "https://github.com/f3-factory/fatfree-core/issues",
+                "source": "https://github.com/f3-factory/fatfree-core/tree/3.8.2"
             },
-            "time": "2022-11-04T23:15:19+00:00"
+            "time": "2023-07-23T22:11:30+00:00"
         }
     ],
     "packages-dev": [],
@@ -49,8 +49,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4"
+        "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

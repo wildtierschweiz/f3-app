@@ -195,7 +195,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param $key_
      * @return string|null
      */
-    public function getEntry(string $key_): string|NULL
+    public static function getEntry(string $key_): string|NULL
     {
         return self::$_dictionary_data[$key_] ?? NULL;
     }
@@ -207,7 +207,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param bool $write_to_file_
      * @return void
      */
-    public function setEntry(string $key_, string $value_ = '', bool $write_to_file_ = true): void
+    public static function setEntry(string $key_, string $value_ = '', bool $write_to_file_ = true): void
     {
         self::$_dictionary_data[$key_] = $value_;
         if ($write_to_file_ === true)
@@ -221,7 +221,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param bool $write_to_file_
      * @return void
      */
-    public function removeEntry(string $key_, bool $write_to_file_ = true): void
+    public static function removeEntry(string $key_, bool $write_to_file_ = true): void
     {
         unset(self::$_dictionary_data[$key_]);
         if ($write_to_file_ === true)
