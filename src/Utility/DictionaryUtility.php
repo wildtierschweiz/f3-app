@@ -23,43 +23,4 @@ class DictionaryUtility
         $this->_dictionary_data = $dictionary_data_;
     }
 
-    /**
-     * get the parsed dictionary as one dimensional key value pairs
-     * @return array
-     */
-    public function getDictionaryData(): array
-    {
-        return $this->_dictionary_data;
-    }
-
-    /**
-     * get entry from current dictionary
-     * @param $key_
-     * @return string|null
-     */
-    public function getEntry(string $key_): string|NULL
-    {
-        return $this->_dictionary_data[$key_] ?? NULL;
-    }
-
-    /**
-     * create or edit entry of current dictionary
-     * @param string $key_
-     * @param string $value_
-     * @return void
-     */
-    public function setEntry(string $key_, string $value_ = ''): void
-    {
-        $this->_dictionary_data[$key_] = $value_;
-    }
-
-    /**
-     * remove entry from current dictionary
-     * @param string $key_
-     * @return void
-     */
-    public function removeEntry(string $key_): void
-    {
-        unset($this->_dictionary_data[$key_]);
-    }
 }

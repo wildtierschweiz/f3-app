@@ -24,7 +24,6 @@ final class LanguageService extends Prefab implements ServiceInterface
 
     private static Base $_f3;
     private static FilesystemUtility $_filesystem;
-    private static DictionaryUtility $_service;
     private static array $_options = [];
     private static array $_dictionary_data = [];
 
@@ -48,9 +47,26 @@ final class LanguageService extends Prefab implements ServiceInterface
             ],
             $options_
         );
-        $_current_language = self::getCurrentLanguage(true);
-        self::$_dictionary_data = self::parseDictionary(self::getDictionaryData($_current_language));
-        self::$_service = new DictionaryUtility(self::$_dictionary_data);
+        // populating service property initially
+        self::loadDictionaryData(self::getCurrentLanguage(true));
+    }
+
+    /**
+     * get service options
+     * @return array
+     */
+    public static function getOptions(): array
+    {
+        return self::$_options;
+    }
+
+    /**
+     * get service instance
+     * @return null
+     */
+    public static function getService(): NULL
+    {
+        return NULL;
     }
 
     /**
@@ -60,32 +76,13 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function loadDictionaryData(string $language_ = ''): void
     {
-        $_language = self::getCurrentLanguage(false);
+        $_language = $language_ ?: self::getCurrentLanguage(false);
         self::$_dictionary_data = self::parseDictionary(self::getDictionaryData($_language));
-        self::$_service = new DictionaryUtility(self::$_dictionary_data);
         return;
     }
 
     /**
-     * parse a dictionary key to parts
-     * @param string $key_
-     */
-    public static function parseKey(string $key_): array
-    {
-        $_t = explode('.', (string)$key_, 3);
-        $_parts_count = count($_t);
-        $_has_prefix = self::$_options['dictionaryprefix'] === $_t[0];
-        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
-        $_result = [
-            'prefix' => $_has_prefix ? $_t[0] : '',
-            'section' => $_t[$_has_prefix ? 1 : 0],
-            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
-        ];
-        return $_result;
-    }
-
-    /**
-     * write data array to ini file
+     * write data array to a language dictionary file
      * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
      * @param ?string $file_name_ path and file name to write to
      * @param ?array $dictionary_data_ flat dimensional key value pairs of the dictionary
@@ -126,21 +123,53 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
-     * get service options
-     * @return array
+     * get entry from current dictionary
+     * @param $key_
+     * @return string|null
      */
-    public static function getOptions(): array
+    public function getEntry(string $key_): string|NULL
     {
-        return self::$_options;
+        return self::$_dictionary_data[$key_] ?? NULL;
     }
 
     /**
-     * get service instance
-     * @return DictionaryUtility|null
+     * create or edit entry of current dictionary
+     * @param string $key_
+     * @param string $value_
+     * @param bool $write_to_file_
+     * @return void
      */
-    public static function getService(): DictionaryUtility|NULL
+    public function setEntry(string $key_, string $value_ = '', bool $write_to_file_ = true): void
     {
-        return self::$_service;
+        self::$_dictionary_data[$key_] = $value_;
+        if ($write_to_file_ === true)
+            self::writeDictionaryFile();
+    }
+
+    /**
+     * remove entry from current dictionary
+     * @param string $key_
+     * @param bool $write_to_file_
+     * @return void
+     */
+    public function removeEntry(string $key_, bool $write_to_file_ = true): void
+    {
+        unset(self::$_dictionary_data[$key_]);
+        if ($write_to_file_ === true)
+            self::writeDictionaryFile();
+    }
+
+    /**
+     * get the current framework language code
+     * @param $fallback_on_unavailable_
+     * @return string 
+     */
+    public static function getCurrentLanguage(bool $fallback_on_unavailable_ = false): string
+    {
+        $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
+        if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
+            $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
+        return $_language;
     }
 
     /**
@@ -168,19 +197,6 @@ final class LanguageService extends Prefab implements ServiceInterface
     public static function isAvailableLanguage(string $language_): bool
     {
         return in_array($language_, self::getAvailableLanguages());
-    }
-
-    /**
-     * get the current framework language code
-     * @param $fallback_on_unavailable_
-     * @return string 
-     */
-    public static function getCurrentLanguage(bool $fallback_on_unavailable_ = false): string
-    {
-        $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
-        if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
-            $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
-        return $_language;
     }
 
     /**
@@ -232,6 +248,24 @@ final class LanguageService extends Prefab implements ServiceInterface
             // cleanup key
             while (($_t = array_pop($_stack_keys)) && $_t !== $k_);
         }
+        return $_result;
+    }
+
+    /**
+     * parse a dictionary key to parts
+     * @param string $key_
+     */
+    private static function parseKey(string $key_): array
+    {
+        $_t = explode('.', (string)$key_, 3);
+        $_parts_count = count($_t);
+        $_has_prefix = self::$_options['dictionaryprefix'] === $_t[0];
+        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
+        $_result = [
+            'prefix' => $_has_prefix ? $_t[0] : '',
+            'section' => $_t[$_has_prefix ? 1 : 0],
+            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
+        ];
         return $_result;
     }
 
