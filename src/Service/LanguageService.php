@@ -16,14 +16,17 @@ use WildtierSchweiz\F3App\Utility\FilesystemUtility;
  */
 final class LanguageService extends Prefab implements ServiceInterface
 {
+    private const FILE_LINE_BREAK = "\r\n";
     private const DEFAULT_OPTIONS = [
         'dictionaryfilefilter' => '/(?i:^.*\.(ini)$)/m',
+        'sourcefilefilter' => '/(?i:^.*\.(php|htm|html)$)/m',
     ];
 
     private static Base $_f3;
     private static FilesystemUtility $_filesystem;
     private static DictionaryUtility $_service;
     private static array $_options = [];
+    private static array $_dictionary_parsed = [];
 
     /**
      * constructor
@@ -38,12 +41,64 @@ final class LanguageService extends Prefab implements ServiceInterface
             [
                 'dictionarypath' => self::$_f3->get('LOCALES'),
                 'dictionaryprefix' => self::$_f3->get('PREFIX'),
+                'sourcepaths' => [
+                    self::$_f3->get('UI'),
+                    self::$_f3->get('application.sourcedir'),
+                ],
             ],
             $options_
         );
         $_current_language = self::getCurrentLanguage(true);
-        $_dictionary_data = self::getDictionaryData($_current_language);
-        self::$_service = new DictionaryUtility($_current_language, $_dictionary_data);
+        $_dictionary_data = self::parseDictionary(self::getDictionaryData($_current_language));
+        self::$_service = new DictionaryUtility($_dictionary_data);
+    }
+
+    /**
+     * parse a dictionary key to parts
+     * @param string $key_
+     */
+    public static function parseKey(string $key_): array
+    {
+        $_t = explode('.', (string)$key_, 3);
+        $_parts_count = count($_t);
+        $_has_prefix = self::$_options['dictionaryprefix'] === $_t[0];
+        $_has_section = ($_has_prefix && $_parts_count > 2) || (!$_has_prefix && $_parts_count === 2);
+        $_result = [
+            'prefix' => $_has_prefix ? $_t[0] : '',
+            'section' => $_t[$_has_prefix ? 1 : 0],
+            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
+        ];
+        return $_result;
+    }
+
+    /**
+     * write data array to ini file
+     * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
+     * @param ?string $file_name_ path and file name to write to
+     * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
+     * @param bool $quote_strings_
+     * @return int|false
+     */
+    public function writeDictionaryFile(?string $filename_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
+    {
+        $_result = [];
+        $_filename = ($filename_ !== NULL ? $filename_ : $this->_filename);
+        $_dictionary_parsed = ($dictionary_parsed_ !== NULL ? $dictionary_parsed_ : $this->_dictionary_parsed);
+        $_section = '';
+        foreach ($_dictionary_parsed as $k_ => $v_) {
+            $_t = $this->parseKey((string)$k_);
+            // if first section or next section
+            if ($_section === '' || $_t['section'] !== $_section) {
+                // if previous section exists
+                if ($_section !== '')
+                    $_result[] = '';
+                $_section = $_t['section'];
+                $_result[] = '[' . $_section . ']';
+            }
+            $_key = $_t['key'];
+            $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
+        }
+        return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
     }
 
     /**
@@ -60,6 +115,17 @@ final class LanguageService extends Prefab implements ServiceInterface
         $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
         self::$_f3->set('LANGUAGE', $_t);
         return $_result;
+    }
+
+    /**
+     * delete the entire dictionary
+     * @return bool
+     */
+    public static function removeDictionary(string $language_ = ''): bool
+    {
+        $_language = $language_ ?: self::getCurrentLanguage(false);
+        $_filename = self::$_options['dictionarypath'] . $_language . '.ini';
+        return unlink($_filename);
     }
 
     /**
@@ -118,5 +184,57 @@ final class LanguageService extends Prefab implements ServiceInterface
         if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
             $_language = (explode(',', self::$_f3->get('FALLBACK'))[0] ?? '');
         return $_language;
+    }
+
+    /**
+     * check if a dictionary var is used in backend of frontend code
+     * @param string $key_
+     * @param string $filename_filter_
+     * @param array &$filenames_ (optional) retrieve filenames containing the keys
+     * @return int
+     */
+    public static function checkDictionaryUsage(string $key_ = '', array &$filenames_ = NULL): int
+    {
+        $_i = 0;
+        $_files_names = [];
+        foreach (self::$_options['sourcepaths'] ?? [] as $dir_)
+            $_files_names = array_merge($_files_names, self::$_filesystem::recursiveDirectorySearch($dir_, self::$_options['sourcefilefilter']));
+        $_t = '(' . ($key_ !== '' ? $key_ : implode('|', array_keys(self::$_dictionary_parsed))) . ')';
+        foreach ($_files_names as $file_) {
+            $_contents = file_get_contents($file_);
+            if (preg_match($_t, $_contents) === 1) {
+                if ($filenames_ !== NULL)
+                    $filenames_[] = $file_;
+                $_i++;
+            }
+        }
+        return $_i;
+    }
+
+    /**
+     * parse dictionary to single level
+     * @param array $dictionary_node_
+     * @return array
+     */
+    private static function parseDictionary(array $dictionary_node_ = []): array
+    {
+        static $_result = [];
+        static $_stack_keys = [];
+        // add the prefix to the keys, one time
+        if (!in_array(self::$_options['dictionaryprefix'], $_stack_keys))
+            $_stack_keys[] = self::$_options['dictionaryprefix'];
+        // add dictionary node to the result
+        foreach ($dictionary_node_ as $k_ => $v_) {
+            // add new key to stack
+            $_stack_keys[] = $k_;
+            // if child nodes present, reparse
+            if (is_array($v_))
+                self::parseDictionary($v_);
+            // when no further childs, store value to result with generated key
+            else $_result[implode('.', $_stack_keys)] = $v_;
+            // cleanup key
+            while (($_t = array_pop($_stack_keys)) && $_t !== $k_);
+        }
+        return $_result;
     }
 }
