@@ -169,6 +169,7 @@ final class SessionService extends Prefab implements ServiceInterface
      * add a session based flash message
      * @param string $text_
      * @param string $type_ info | warning | danger
+     * @return void
      */
     public static function addFlashMessage(string $text_, string $type_ = 'info'): void
     {
@@ -176,6 +177,15 @@ final class SessionService extends Prefab implements ServiceInterface
             'type' => $type_,
             'text' => $text_,
         ]);
+    }
+
+    /**
+     * add a session based flash message
+     * @return array 
+     */
+    public static function getFlashMessages(): array
+    {
+        return (array)self::$_f3->get('SESSION._message');
     }
 
     /**
