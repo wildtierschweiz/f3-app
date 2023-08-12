@@ -165,6 +165,11 @@ final class SessionService extends Prefab implements ServiceInterface
         self::$_f3->clear('SESSION._message');
     }
 
+    /**
+     * add a session based flash message
+     * @param string $text_
+     * @param string $type_ info | warning | danger
+     */
     public static function addFlashMessage(string $text_, string $type_ = 'info'): void
     {
         self::$_f3->push('SESSION._message', [
