@@ -94,6 +94,22 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
+     * get dictionary data for a language
+     * also contains fallback values, not present in the language requested (f3 standard)
+     * @param string $language_
+     * @return array
+     */
+    public static function getDictionaryData(string $language_ = ''): array
+    {
+        $_language = $language_ ?: self::getCurrentLanguage(false);
+        $_t = self::$_f3->get('LANGUAGE');
+        self::$_f3->set('LANGUAGE', $_language);
+        $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
+        self::$_f3->set('LANGUAGE', $_t);
+        return $_result;
+    }
+
+    /**
      * write data array to a language dictionary file
      * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
      * @param ?string $file_name_ path and file name to write to
@@ -280,22 +296,6 @@ final class LanguageService extends Prefab implements ServiceInterface
             'section' => $_t[$_has_prefix ? 1 : 0],
             'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
         ];
-        return $_result;
-    }
-
-    /**
-     * get dictionary data for a language
-     * also contains fallback values, not present in the language requested (f3 standard)
-     * @param string $language_
-     * @return array
-     */
-    private static function getDictionaryData(string $language_ = ''): array
-    {
-        $_language = $language_ ?: self::getCurrentLanguage(false);
-        $_t = self::$_f3->get('LANGUAGE');
-        self::$_f3->set('LANGUAGE', $_language);
-        $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
-        self::$_f3->set('LANGUAGE', $_t);
         return $_result;
     }
 
