@@ -159,34 +159,14 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
-     * write data array to a language dictionary file
-     * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
-     * @param ?string $file_name_ path and file name to write to
-     * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
-     * @param bool $quote_strings_
-     * @return int|false
+     * delete the entire dictionary
+     * @return bool
      */
-    public static function writeDictionaryFile(?string $language_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
+    public static function createDictionary(string $language_): bool
     {
-        $_result = [];
-        $_language = $language_ ?? self::getCurrentLanguage(false);
-        $_dictionary_parsed = $dictionary_parsed_ ?? self::$_dictionary_parsed;
-        $_filename = self::getDictionaryFilename($_language);
-        $_section = '';
-        foreach ($_dictionary_parsed as $k_ => $v_) {
-            $_t = self::parseKey((string)$k_);
-            // if first section or next section
-            if ($_section === '' || $_t['section'] !== $_section) {
-                // if previous section exists
-                if ($_section !== '')
-                    $_result[] = '';
-                $_section = $_t['section'];
-                $_result[] = '[' . $_section . ']';
-            }
-            $_key = $_t['key'];
-            $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
-        }
-        return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
+        if (self::isAvailableLanguage($language_))
+            return false;
+        return self::writeDictionaryFile($language_);
     }
 
     /**
@@ -333,5 +313,36 @@ final class LanguageService extends Prefab implements ServiceInterface
     {
         $_language = $language_ ?: self::getCurrentLanguage(false);
         return self::$_options['dictionarypath'] . $_language . '.ini';
+    }
+
+    /**
+     * write data array to a language dictionary file
+     * @author https://stackoverflow.com/questions/5695145/how-to-read-and-write-to-an-ini-file-with-php
+     * @param ?string $file_name_ path and file name to write to
+     * @param ?array $dictionary_parsed_ flat dimensional key value pairs of the dictionary
+     * @param bool $quote_strings_
+     * @return int|false
+     */
+    private static function writeDictionaryFile(?string $language_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
+    {
+        $_result = [];
+        $_language = $language_ ?? self::getCurrentLanguage(false);
+        $_dictionary_parsed = $dictionary_parsed_ ?? self::$_dictionary_parsed;
+        $_filename = self::getDictionaryFilename($_language);
+        $_section = '';
+        foreach ($_dictionary_parsed as $k_ => $v_) {
+            $_t = self::parseKey((string)$k_);
+            // if first section or next section
+            if ($_section === '' || $_t['section'] !== $_section) {
+                // if previous section exists
+                if ($_section !== '')
+                    $_result[] = '';
+                $_section = $_t['section'];
+                $_result[] = '[' . $_section . ']';
+            }
+            $_key = $_t['key'];
+            $_result[] = $_key . ' = ' . ($quote_strings_ === true ? (is_numeric($v_) ? $v_ : '"' . $v_ . '"') : $v_);
+        }
+        return file_put_contents($_filename, implode(self::FILE_LINE_BREAK, $_result));
     }
 }
