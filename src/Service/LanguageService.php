@@ -113,7 +113,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param string $language_
      * @return null|false
      */
-    protected static function redirectLanguage(string $language_): NULL|false
+    public static function redirectLanguage(string $language_): NULL|false
     {
         if (!self::isAvailableLanguage($language_))
             return false;
