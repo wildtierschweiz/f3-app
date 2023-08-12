@@ -61,14 +61,13 @@ class F3App extends Prefab
      * boot load service classes
      * @param int $stage_id_ 0: on app construction / 1: before route
      */
-    private static function serviceBootloader(int $stage_id_ = 0): void
+    private static function serviceBootloader(int $stage_ = 0): void
     {
         foreach (self::$_f3->get('CONF._services') as $name_ => $class_) {
             $_class = $class_[0];
             $_stage = (int)($class_[1] ?? 0);
-            if ($_stage === $stage_id_)
-                if ((int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
-                    self::register($name_, $_class, self::$_f3->get('CONF.' . $name_));
+            if ($_stage === $stage_ && (int)self::$_f3->get('CONF.' . $name_ . '.enable') === 1)
+                self::register($name_, $_class, self::$_f3->get('CONF.' . $name_));
         }
     }
 
