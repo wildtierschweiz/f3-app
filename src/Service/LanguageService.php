@@ -49,8 +49,21 @@ final class LanguageService extends Prefab implements ServiceInterface
             $options_
         );
         $_current_language = self::getCurrentLanguage(true);
-        $_dictionary_data = self::parseDictionary(self::getDictionaryData($_current_language));
-        self::$_service = new DictionaryUtility($_dictionary_data);
+        self::$_dictionary_parsed = self::parseDictionary(self::getDictionaryData($_current_language));
+        self::$_service = new DictionaryUtility(self::$_dictionary_parsed);
+    }
+
+    /**
+     * load dictionary data of a language
+     * @param string $language_
+     * @return void
+     */
+    public static function loadDictionaryData(string $language_ = ''): void
+    {
+        $_language = self::getCurrentLanguage(true);
+        self::$_dictionary_parsed = self::parseDictionary(self::getDictionaryData($_language));
+        self::$_service = new DictionaryUtility(self::$_dictionary_parsed);
+        return;
     }
 
     /**
@@ -79,14 +92,14 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param bool $quote_strings_
      * @return int|false
      */
-    public function writeDictionaryFile(?string $filename_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
+    public static function writeDictionaryFile(?string $filename_ = NULL, ?array $dictionary_parsed_ = NULL, bool $quote_strings_ = false): int|false
     {
         $_result = [];
-        $_filename = ($filename_ !== NULL ? $filename_ : $this->_filename);
-        $_dictionary_parsed = ($dictionary_parsed_ !== NULL ? $dictionary_parsed_ : $this->_dictionary_parsed);
+        $_filename = $filename_ ?? $this->_filename;
+        $_dictionary_parsed = $dictionary_parsed_ ?? self::$_dictionary_parsed;
         $_section = '';
         foreach ($_dictionary_parsed as $k_ => $v_) {
-            $_t = $this->parseKey((string)$k_);
+            $_t = self::parseKey((string)$k_);
             // if first section or next section
             if ($_section === '' || $_t['section'] !== $_section) {
                 // if previous section exists
@@ -107,7 +120,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param string $language_
      * @return array
      */
-    public static function getDictionaryData(string $language_ = ''): array
+    private static function getDictionaryData(string $language_ = ''): array
     {
         $_language = $language_ ?: self::getCurrentLanguage(true);
         $_t = self::$_f3->get('LANGUAGE');

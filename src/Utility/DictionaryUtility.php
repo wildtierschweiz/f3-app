@@ -12,24 +12,24 @@ use Base;
  */
 class DictionaryUtility
 {
-    private array $_dictionary_parsed = [];
+    private array $_dictionary_data = [];
 
     /**
      * initialization
      * @param array $dictdata_
      */
-    function __construct(array $dictdata_ = [])
+    function __construct(array $dictionary_data_ = [])
     {
-        $this->_dictionary_parsed = $dictdata_;
+        $this->_dictionary_data = $dictionary_data_;
     }
 
     /**
      * get the parsed dictionary as one dimensional key value pairs
      * @return array
      */
-    public function getDictionaryParsed(): array
+    public function getDictionary(): array
     {
-        return $this->_dictionary_parsed;
+        return $this->_dictionary_data;
     }
 
     /**
@@ -39,7 +39,7 @@ class DictionaryUtility
      */
     public function getEntry(string $key_): string|NULL
     {
-        return $this->_dictionary_parsed[$key_] ?? NULL;
+        return $this->_dictionary_data[$key_] ?? NULL;
     }
 
     /**
@@ -51,7 +51,7 @@ class DictionaryUtility
      */
     public function setEntry(string $key_, string $value_ = ''): void
     {
-        $this->_dictionary_parsed[$key_] = $value_;
+        $this->_dictionary_data[$key_] = $value_;
     }
 
     /**
@@ -62,6 +62,6 @@ class DictionaryUtility
      */
     public function removeEntry(string $key_): void
     {
-        unset($this->_dictionary_parsed[$key_]);
+        unset($this->_dictionary_data[$key_]);
     }
 }
