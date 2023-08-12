@@ -122,6 +122,20 @@ final class LanguageService extends Prefab implements ServiceInterface
     }
 
     /**
+     * get language base urls
+     * @param string $language_
+     * @return string
+     */
+    public static function getLanguageUrl(string $language_ = ''): string
+    {
+        $_language = $language_ ?: self::getCurrentLanguage(true);
+        if (!self::isAvailableLanguage($_language))
+            return '';
+        $_query = self::$_f3->get('QUERY');
+        return '/' . $_language . '/' . self::$_f3->get('PARAMS.page') . ($_query ? '?' . $_query : '');
+    }
+
+    /**
      * load dictionary data of a language
      * @param string $language_
      * @return void
