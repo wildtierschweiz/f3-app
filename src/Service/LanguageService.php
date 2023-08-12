@@ -166,7 +166,8 @@ final class LanguageService extends Prefab implements ServiceInterface
     {
         if (self::isAvailableLanguage($language_))
             return false;
-        return self::writeDictionaryFile($language_);
+        self::writeDictionaryFile($language_);
+        return true;
     }
 
     /**
