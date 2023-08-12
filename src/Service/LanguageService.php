@@ -258,7 +258,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         $_result = [
             'prefix' => $_has_prefix ? $_t[0] : '',
             'section' => $_t[$_has_prefix ? 1 : 0],
-            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section ? 1 : 0)],
+            'key' => $_t[$_has_prefix && $_has_section ? 2 : ($_has_section && !$_has_prefix ? 1 : 0)],
         ];
         return $_result;
     }
