@@ -47,7 +47,7 @@ final class ConfigService extends Prefab implements ServiceInterface
         $_default_dictionaries = glob(self::$_default_dictionaries . '*.ini');
         if ($_default_dictionaries !== false)
             foreach ($_default_dictionaries as $file_)
-                self::$_f3->lexicon($file_);
+                self::$_f3->config($file_);
     }
 
     /**
