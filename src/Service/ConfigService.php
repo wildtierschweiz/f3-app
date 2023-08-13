@@ -47,8 +47,9 @@ final class ConfigService extends Prefab implements ServiceInterface
         $_default_dictionaries = glob(self::$_default_dictionaries . '*.ini');
         if ($_default_dictionaries !== false)
             foreach ($_default_dictionaries as $file_) {
+                $_prefix = self::$_f3->get('PREFIX') . '._' . explode('.', array_pop(explode(DIRECTORY_SEPARATOR, $file_))) . '.';
                 $_ini_file_content = parse_ini_file($file_, true);
-                self::$_f3->mset($_ini_file_content, self::$_f3->get('PREFIX'));
+                self::$_f3->mset($_ini_file_content, $_prefix);
             }
     }
 
