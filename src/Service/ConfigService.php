@@ -20,6 +20,9 @@ final class ConfigService extends Prefab implements ServiceInterface
     private static Base $_f3;
     private static array $_options = [];
 
+    private static string $_default_configs = __DIR__ . '/../Config/';
+    private static string $_default_dictionaries = __DIR__ . '/../../dict/';
+
     /**
      * constructor
      * - load config defaults
@@ -30,10 +33,21 @@ final class ConfigService extends Prefab implements ServiceInterface
         self::$_f3 = Base::instance();
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
         self::$_f3->config(__DIR__ . '/../Config/default.ini');
-        $_config_files = glob(self::$_options['path'] . '*.ini');
-        if ($_config_files !== false)
-            foreach ($_config_files as $_inifile)
-                self::$_f3->config($_inifile, (bool)self::$_options['allow']);
+
+        $_default_configs = glob(self::$_default_configs . '*.ini');
+        if ($_default_configs !== false)
+            foreach ($_default_configs as $file_)
+                self::$_f3->config($file_, (bool)self::$_options['allow']);
+
+        $_default_dictionaries = glob(self::$_default_dictionaries . '*.ini');
+        if ($_default_dictionaries !== false)
+            foreach ($_default_dictionaries as $file_)
+                self::$_f3->lexicon($file_);
+
+        $_configs = glob(self::$_options['path'] . '*.ini');
+        if ($_configs !== false)
+            foreach ($_configs as $file_)
+                self::$_f3->config($file_, (bool)self::$_options['allow']);
     }
 
     /**
