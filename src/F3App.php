@@ -21,7 +21,6 @@ class F3App extends Prefab
         'config_allow' => false,
         'config_defaultdictionaries' => true,
         'config_service_class' => __NAMESPACE__ . '\Service\ConfigService',
-        'default_page' => 'home'
     ];
 
     /**
@@ -87,19 +86,10 @@ class F3App extends Prefab
     public static function beforeroute(Base $f3_): void
     {
         self::serviceBootloader(1);
+        $_language = self::service('language');
+        if ($_language)
+            $_language::frameworkLanguagePreparation();
         $_session = self::service('session');
-        if (!$f3_->get('PARAMS.page'))
-            $f3_->set('PARAMS.page', self::$_options['default_page']);
-        if (!$f3_->get('PARAMS.lang') || !file_exists($f3_->get('LOCALES') . $f3_->get('PARAMS.lang') . '.ini')) {
-            $f3_->set('PARAMS.lang', $f3_->get('FALLBACK'));
-            foreach (explode(',', strtolower($f3_->get('LANGUAGE'))) as $lang_) {
-                if (file_exists($f3_->get('LOCALES') . $lang_ . '.ini')) {
-                    $f3_->set('PARAMS.lang', $lang_);
-                    break;
-                }
-            }
-        }
-        $f3_->set('LANGUAGE', $f3_->get('PARAMS.lang'));
         if ($_session && !$_session::checkToken())
             $f3_->error(401);
         return;

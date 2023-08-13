@@ -19,6 +19,9 @@ final class LanguageService extends Prefab implements ServiceInterface
     private const DEFAULT_OPTIONS = [
         'dictionaryfilefilter' => '/(?i:^.*\.(ini)$)/m',
         'sourcefilefilter' => '/(?i:^.*\.(php|htm|html)$)/m',
+        'language_routing_param_name' => 'PARAMS.lang',
+        'page_routing_param_name' => 'PARAMS.page',
+        'page_default' => 'home',
     ];
 
     private static Base $_f3;
@@ -77,7 +80,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function getCurrentLanguage(bool $fallback_on_unavailable_ = false): string
     {
-        $_language = (explode(',', self::$_f3->get('LANGUAGE'))[0] ?? '');
+        $_language = (self::getClientLanguages()[0] ?? '');
         if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
             $_language = explode(',', self::getDefaultLanguage());
         return $_language;
@@ -92,10 +95,20 @@ final class LanguageService extends Prefab implements ServiceInterface
     {
         $_result = [];
         $_filenames = self::$_filesystem::recursiveDirectorySearch(self::$_options['dictionarypath'], self::$_options['dictionaryfilefilter']);
-        foreach ($_filenames as $file_) {
-            $_t = explode('.', array_pop(explode(DIRECTORY_SEPARATOR, $file_)))[0];
-            $_result[] = $_t;
-        }
+        foreach ($_filenames as $file_)
+            $_result[] = explode('.', array_pop(explode(DIRECTORY_SEPARATOR, $file_)))[0];
+        return $_result;
+    }
+
+    /**
+     * get languages requested by the client
+     * @return array
+     */
+    public static function getClientLanguages(): array
+    {
+        $_result = [];
+        foreach (explode(',', self::frameworkLanguage()) as $lang_)
+            $_result[] = $lang_;
         return $_result;
     }
 
@@ -113,21 +126,76 @@ final class LanguageService extends Prefab implements ServiceInterface
     /**
      * redirect to language with current path and querystring
      * @param string $language_
+     * @param string $controller_
      * @return null|false
      */
-    public static function redirectLanguage(string $language_): NULL|false
+    public static function redirectLanguage(string $language_, ?string $controller_ = NULL): NULL|false
     {
         if (!self::isAvailableLanguage($language_))
             return false;
         $_query = self::$_f3->get('QUERY');
-        return self::$_f3->reroute('/' . $language_ . '/' . self::$_f3->get('PARAMS.page') . ($_query ? '?' . $_query : ''));
+        $_controller = $controller_ ?? self::pageRoutingParam();
+        $_language = self::isAvailableLanguage($language_) ? $language_ : self::getDefaultLanguage();
+        return self::$_f3->reroute('/' . $_language . '/' . $_controller . ($_query ? '?' . $_query : ''));
+    }
+
+    /**
+     * reroute to the complete /language/controller url or simply
+     * reduce client languages to available project language, including default fallback
+     * @return void
+     */
+    public static function frameworkLanguagePreparation(): void
+    {
+        // default controller
+        self::pageRoutingParam(self::pageRoutingParam() ?: self::$_options['page_default']);
+        // if routing language parameter is not set or the routing language is not available in the project
+        if (!self::languageRoutingParam() || !self::isAvailableLanguage(self::languageRoutingParam())) {
+            // set default language to the routing parameter
+            self::languageRoutingParam(self::getDefaultLanguage());
+            // look for the closest client language that is available in the project
+            foreach (self::getClientLanguages() as $lang_) {
+                if (!self::isAvailableLanguage($lang_))
+                    continue;
+                self::languageRoutingParam($lang_);
+                break;
+            }
+            // redirect to /language/controller route
+            self::redirectLanguage(self::languageRoutingParam(), self::pageRoutingParam());
+            return;
+        }
+        // set the framework language
+        self::frameworkLanguage(self::languageRoutingParam());
+    }
+
+    /**
+     * get or set the language routing param
+     * @param string $value_
+     * @return string
+     */
+    private static function languageRoutingParam(?string $value_ = NULL): string
+    {
+        if ($value_ !== NULL)
+            self::$_f3->set(self::$_options['language_routing_param_name'], $value_);
+        return self::$_f3->get(self::$_options['language_routing_param_name']) ?? '';
+    }
+
+    /**
+     * get or set the page routing param
+     * @param string $value_
+     * @return string
+     */
+    private static function pageRoutingParam(?string $value_ = NULL): string
+    {
+        if ($value_ !== NULL)
+            self::$_f3->set(self::$_options['page_routing_param_name'], $value_);
+        return self::$_f3->get(self::$_options['page_routing_param_name']) ?? '';
     }
 
     /**
      * get the framework default language
      * @return string
      */
-    public function getDefaultLanguage(): string
+    public static function getDefaultLanguage(): string
     {
         return explode(',', self::$_f3->get('FALLBACK'))[0] ?? '';
     }
@@ -143,8 +211,20 @@ final class LanguageService extends Prefab implements ServiceInterface
         $_language = $language_;
         if (!self::isAvailableLanguage($_language))
             $_language = self::getDefaultLanguage();
-        self::$_f3->set('PARAMS.lang', $_language);
-        self::$_f3->set('LANGUAGE', $_language);
+        self::$_f3->set(self::$_options['language_routing_param_name'], $_language);
+        self::frameworkLanguage($_language);
+    }
+
+    /**
+     * get or set f3 framework language, originally loaded from config
+     * @param string $language_
+     * @return string
+     */
+    private static function frameworkLanguage(?string $language_ = NULL): string
+    {
+        if ($language_ !== NULL)
+            self::$_f3->set('LANGUAGE', $language_);
+        return self::$_f3->get('LANGUAGE');
     }
 
     /**
@@ -158,7 +238,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         if (!self::isAvailableLanguage($_language))
             return '';
         $_query = self::$_f3->get('QUERY');
-        return '/' . $_language . '/' . self::$_f3->get('PARAMS.page') . ($_query ? '?' . $_query : '');
+        return '/' . $_language . '/' . self::pageRoutingParam() . ($_query ? '?' . $_query : '');
     }
 
     /**
@@ -295,10 +375,10 @@ final class LanguageService extends Prefab implements ServiceInterface
     private static function getDictionaryData(string $language_ = ''): array
     {
         $_language = $language_ ?: self::getCurrentLanguage(false);
-        $_t = self::$_f3->get('LANGUAGE');
-        self::$_f3->set('LANGUAGE', $_language);
+        $_t = self::frameworkLanguage();
+        self::frameworkLanguage($_language);
         $_result = self::$_f3->get(self::$_options['dictionaryprefix']);
-        self::$_f3->set('LANGUAGE', $_t);
+        self::frameworkLanguage($_t);
         return $_result;
     }
 
