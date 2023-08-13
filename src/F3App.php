@@ -19,6 +19,7 @@ class F3App extends Prefab
     private const DEFAULT_OPTIONS = [
         'config_path' => '../config/',
         'config_allow' => false,
+        'config_defaultdictionaries' => true,
         'config_service_class' => __NAMESPACE__ . '\Service\ConfigService',
         'default_page' => 'home'
     ];
@@ -52,7 +53,8 @@ class F3App extends Prefab
         self::$_f3 = Base::instance();
         self::register('config', self::$_options['config_service_class'], [
             'path' => self::$_options['config_path'],
-            'allow' => self::$_options['config_allow']
+            'allow' => self::$_options['config_allow'],
+            'defaultdictionaries' => self::$_options['config_defaultdictionaries'],
         ]);
         self::serviceBootloader(0);
     }
