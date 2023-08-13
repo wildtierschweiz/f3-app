@@ -39,15 +39,15 @@ final class ConfigService extends Prefab implements ServiceInterface
             foreach ($_default_configs as $file_)
                 self::$_f3->config($file_, (bool)self::$_options['allow']);
 
-        $_default_dictionaries = glob(self::$_default_dictionaries . '*.ini');
-        if ($_default_dictionaries !== false)
-            foreach ($_default_dictionaries as $file_)
-                self::$_f3->lexicon($file_);
-
         $_configs = glob(self::$_options['path'] . '*.ini');
         if ($_configs !== false)
             foreach ($_configs as $file_)
                 self::$_f3->config($file_, (bool)self::$_options['allow']);
+
+        $_default_dictionaries = glob(self::$_default_dictionaries . '*.ini');
+        if ($_default_dictionaries !== false)
+            foreach ($_default_dictionaries as $file_)
+                self::$_f3->lexicon($file_);
     }
 
     /**
