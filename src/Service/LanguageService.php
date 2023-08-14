@@ -83,7 +83,7 @@ final class LanguageService extends Prefab implements ServiceInterface
     {
         $_language = (self::getClientLanguages()[0] ?? '');
         if ($fallback_on_unavailable_ === true && !in_array($_language, self::getAvailableLanguages()))
-            $_language = explode(',', self::getDefaultLanguage());
+            $_language = self::getDefaultLanguage();
         return $_language;
     }
 
