@@ -19,6 +19,7 @@ final class LanguageService extends Prefab implements ServiceInterface
     private const DEFAULT_OPTIONS = [
         'dictionaryfilefilter' => '/(?i:^.*\.(ini)$)/m',
         'sourcefilefilter' => '/(?i:^.*\.(php|htm|html)$)/m',
+        'dictionarysoftdelete' => 1,
         'language_routing_param_name' => 'PARAMS.lang',
         'page_routing_param_name' => 'PARAMS.page',
         'page_default' => 'home',
@@ -276,12 +277,17 @@ final class LanguageService extends Prefab implements ServiceInterface
 
     /**
      * delete the entire dictionary
+     * @param string $language_
      * @return bool
      */
     public static function removeDictionary(string $language_ = ''): bool
     {
+        $_result = false;
         $_language = $language_ ?: self::getCurrentLanguage(false);
-        return unlink(self::getDictionaryFilename($_language));
+        if ((int)self::$_options['dictionarysoftdelete'] === 1)
+            $_result = rename(self::getDictionaryFilename($_language), self::getDictionaryFilename($_language) . '.' . date('Y-m-d_H-i-s'));
+        else $_result = unlink(self::getDictionaryFilename($_language));
+        return $_result;
     }
 
     /**
