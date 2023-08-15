@@ -316,6 +316,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         if (self::$_options['dictionaryprefix'] && !str_starts_with($_key, self::$_options['dictionaryprefix']))
             $_key = implode('.', [self::$_options['dictionaryprefix'], $_key]);
         self::$_dictionary_parsed[$_key] = $value_;
+        self::$_f3->mset(self::$_dictionary_parsed);
         if ($write_to_file_ === true)
             self::writeDictionaryFile();
         return;
@@ -329,7 +330,11 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function removeEntry(string $key_, bool $write_to_file_ = true): void
     {
-        unset(self::$_dictionary_parsed[$key_]);
+        $_key = $key_;
+        if (self::$_options['dictionaryprefix'] && !str_starts_with($_key, self::$_options['dictionaryprefix']))
+            $_key = implode('.', [self::$_options['dictionaryprefix'], $_key]);
+        unset(self::$_dictionary_parsed[$_key]);
+        self::$_f3->mset(self::$_dictionary_parsed);
         if ($write_to_file_ === true)
             self::writeDictionaryFile();
         return;
