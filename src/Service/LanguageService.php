@@ -297,7 +297,10 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function getEntry(string $key_): string|NULL
     {
-        return self::$_dictionary_parsed[$key_] ?? NULL;
+        $_key = $key_;
+        if (self::$_options['dictionaryprefix'] && !str_starts_with($_key, self::$_options['dictionaryprefix']))
+            $_key = implode('.', [self::$_options['dictionaryprefix'], $_key]);
+        return self::$_dictionary_parsed[$_key] ?? NULL;
     }
 
     /**
@@ -309,7 +312,10 @@ final class LanguageService extends Prefab implements ServiceInterface
      */
     public static function setEntry(string $key_, string $value_ = '', bool $write_to_file_ = true): void
     {
-        self::$_dictionary_parsed[$key_] = $value_;
+        $_key = $key_;
+        if (self::$_options['dictionaryprefix'] && !str_starts_with($_key, self::$_options['dictionaryprefix']))
+            $_key = implode('.', [self::$_options['dictionaryprefix'], $_key]);
+        self::$_dictionary_parsed[$_key] = $value_;
         if ($write_to_file_ === true)
             self::writeDictionaryFile();
         return;
