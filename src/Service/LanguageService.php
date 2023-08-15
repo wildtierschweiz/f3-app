@@ -221,7 +221,7 @@ final class LanguageService extends Prefab implements ServiceInterface
      * @param string $language_
      * @return string
      */
-    private static function frameworkLanguage(?string $language_ = NULL): string
+    public static function frameworkLanguage(?string $language_ = NULL): string
     {
         if ($language_ !== NULL)
             self::$_f3->set('LANGUAGE', $language_);
@@ -445,6 +445,7 @@ final class LanguageService extends Prefab implements ServiceInterface
         $_result = [];
         $_language = $language_ ?? self::getCurrentLanguage(false);
         $_dictionary_parsed = $dictionary_parsed_ ?? self::$_dictionary_parsed;
+        ksort($_dictionary_parsed, SORT_STRING);
         $_filename = self::getDictionaryFilename($_language);
         $_section = '';
         foreach ($_dictionary_parsed as $k_ => $v_) {
