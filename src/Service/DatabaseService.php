@@ -28,37 +28,29 @@ final class DatabaseService extends Prefab implements ServiceInterface
     function __construct(array $options_)
     {
         self::$_options = array_merge(self::DEFAULT_OPTIONS, $options_);
-        switch (strtolower(self::$_options['engine'] ?? '')) {
-            default:
-                self::$_service = NULL;
-                break;
-            case 'sql':
-                self::$_service = new SQL(
-                    (self::$_options['type'] ?? '')
-                        . ':host=' . (self::$_options['host'] ?? '')
-                        . ';port=' . (self::$_options['port'] ?? '')
-                        . ';dbname=' . (self::$_options['data'] ?? ''),
-                    (self::$_options['user'] ?? ''),
-                    (self::$_options['pass'] ?? '')
-                );
-                break;
-            case 'jig':
-                self::$_service = new Jig(
-                    (self::$_options['folder'] ?? '') . (self::$_options['data'] ?? '') . '/',
-                    Jig::FORMAT_JSON
-                );
-                break;
-            case 'mongo':
-                self::$_service = new Mongo(
-                    'mongodb://'
-                        . (self::$_options['host'] ?? '')
-                        . ':'
-                        . (self::$_options['port'] ?? ''),
-                    (self::$_options['data'] ?? ''),
-                    NULL
-                );
-                break;
-        }
+        self::$_service = match (self::$_options['engine'] ?? '') {
+            default => NULL,
+            'sql' => new SQL(
+                (self::$_options['type'] ?? '')
+                    . ':host=' . (self::$_options['host'] ?? '')
+                    . ';port=' . (self::$_options['port'] ?? '')
+                    . ';dbname=' . (self::$_options['data'] ?? ''),
+                (self::$_options['user'] ?? ''),
+                (self::$_options['pass'] ?? '')
+            ),
+            'jig' => new Jig(
+                (self::$_options['folder'] ?? '') . (self::$_options['data'] ?? '') . '/',
+                Jig::FORMAT_JSON
+            ),
+            'mongo' => new Mongo(
+                'mongodb://'
+                    . (self::$_options['host'] ?? '')
+                    . ':'
+                    . (self::$_options['port'] ?? ''),
+                (self::$_options['data'] ?? ''),
+                NULL
+            ),
+        };
     }
 
     /**
