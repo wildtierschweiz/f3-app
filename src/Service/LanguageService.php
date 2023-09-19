@@ -67,11 +67,10 @@ final class LanguageService extends Prefab implements ServiceInterface
 
     /**
      * get service instance
-     * @return null
+     * @return void
      */
-    public static function getService(): NULL
+    public static function getService(): void
     {
-        return NULL;
     }
 
     /**
