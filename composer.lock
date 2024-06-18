@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a9a48109cb4ee7426b2ba6ffb33131a",
+    "content-hash": "cf0c970c58270a4c8b81890cba70a8da",
     "packages": [
         {
             "name": "bcosca/fatfree-core",
-            "version": "3.8.2",
+            "version": "dev-smtplinelimit",
             "source": {
                 "type": "git",
-                "url": "https://github.com/f3-factory/fatfree-core.git",
-                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc"
+                "url": "https://github.com/wildtierschweiz/fatfree-core-smtplinelimit.git",
+                "reference": "7d9650f2623df69ccf695057f7610bdbca37219e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/f3-factory/fatfree-core/zipball/774692ce7698904d3cb35bbd4f79376bb17eeddc",
-                "reference": "774692ce7698904d3cb35bbd4f79376bb17eeddc",
+                "url": "https://api.github.com/repos/wildtierschweiz/fatfree-core-smtplinelimit/zipball/7d9650f2623df69ccf695057f7610bdbca37219e",
+                "reference": "7d9650f2623df69ccf695057f7610bdbca37219e",
                 "shasum": ""
             },
             "require": {
@@ -29,28 +29,28 @@
                     "."
                 ]
             },
-            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-3.0"
             ],
             "description": "A powerful yet easy-to-use PHP micro-framework designed to help you build dynamic and robust Web applications - fast!",
             "homepage": "http://fatfreeframework.com/",
             "support": {
-                "issues": "https://github.com/f3-factory/fatfree-core/issues",
-                "source": "https://github.com/f3-factory/fatfree-core/tree/3.8.2"
+                "source": "https://github.com/wildtierschweiz/fatfree-core-smtplinelimit/tree/smtplinelimit"
             },
-            "time": "2023-07-23T22:11:30+00:00"
+            "time": "2024-06-17T13:19:43+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "bcosca/fatfree-core": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }

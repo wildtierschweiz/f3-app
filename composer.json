@@ -3,14 +3,14 @@
     "description": "Secure boilerplate for a fat-free framework (f3) web app",
     "type": "library",
     "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/wildtierschweiz/fatfree-core-smtplinelimit"
-    }
-  ],
+        {
+            "type": "vcs",
+            "url": "https://github.com/wildtierschweiz/fatfree-core-smtplinelimit"
+        }
+    ],
     "require": {
         "php": ">=8.1",
-        "bcosca/fatfree-core": "dev-smtplinelimit"
+        "bcosca/fatfree-core": "dev-smtplinelimit#<7d9650f>"
     },
     "license": "MIT",
     "authors": [{
